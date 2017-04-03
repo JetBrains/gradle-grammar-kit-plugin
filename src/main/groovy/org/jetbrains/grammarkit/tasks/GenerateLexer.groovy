@@ -1,6 +1,7 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.gradle.api.tasks.JavaExec
+import org.jetbrains.grammarkit.GrammarKitPluginExtension
 
 class GenerateLexer extends JavaExec {
 

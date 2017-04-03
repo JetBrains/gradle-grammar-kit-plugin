@@ -2,6 +2,7 @@ package org.jetbrains.grammarkit
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 
 class GrammarKit implements Plugin<Project> {
     @Override
