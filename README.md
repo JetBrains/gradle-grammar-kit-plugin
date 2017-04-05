@@ -5,7 +5,7 @@ This plugin simplifies automation of generating lexers and parsers for IntelliJ 
  
 ## Usage
 
-###Loading and applying the plugin
+### Loading and applying the plugin
 
 ```groovy
 buildscript {
