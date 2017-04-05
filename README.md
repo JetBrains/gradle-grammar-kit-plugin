@@ -13,7 +13,7 @@ buildscript {
         maven { url 'https://jitpack.io'}
     }
     dependencies{
-        classpath "com.github.hurricup:gradle-grammar-kit-plugin:b1f3019b1b"
+        classpath "com.github.hurricup:gradle-grammar-kit-plugin:4241ee2274"
     }
 }
 
