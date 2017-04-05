@@ -12,7 +12,7 @@ class GenerateParser extends BaseTask {
         project.afterEvaluate {
             def bnfFile = project.file(source)
             inputs.file bnfFile
-            def effectiveTargetRoot = this.getEffectiveTargetRoot();
+            def effectiveTargetRoot = getEffectiveTargetRoot()
             def parserFile = project.file("$effectiveTargetRoot$pathToParser")
             outputs.file parserFile
             def psiDir = project.file("$effectiveTargetRoot$pathToPsiRoot")
@@ -26,7 +26,7 @@ class GenerateParser extends BaseTask {
         }
     }
 
-    private String getEffectiveTargetRoot() {
+    String getEffectiveTargetRoot() {
         if (targetRoot != null) {
             return targetRoot;
         }

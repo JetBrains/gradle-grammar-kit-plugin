@@ -16,7 +16,7 @@ class GenerateLexer extends BaseTask {
             outputs.file targetFile
 
             def newArgs = []
-            def effectiveSkeleton = this.getEffectiveSkeleton()
+            def effectiveSkeleton = getEffectiveSkeleton()
             if (effectiveSkeleton != null) {
                 newArgs.add("--skel")
                 newArgs.add(effectiveSkeleton)
@@ -33,7 +33,7 @@ class GenerateLexer extends BaseTask {
         })
     }
 
-    private File getEffectiveSkeleton() {
+    File getEffectiveSkeleton() {
         if (skeleton != null) {
             return project.file(skeleton);
         }

@@ -42,7 +42,7 @@ grammarKit {
     // Target root for GrammarKit-generated files, 'gen' by default
     grammarKitTargetRoot = 'gen'
 
-    // If this option is set, plugin will remove lexer, parser and psi directory before generation. Deafult: false 
+    // If this option is set, plugin will remove lexer, parser and psi directory before generation. Default: false 
     purgeOldFiles = true
 }
 ```
