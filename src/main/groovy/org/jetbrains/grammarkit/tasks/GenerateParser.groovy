@@ -1,10 +1,8 @@
 package org.jetbrains.grammarkit.tasks
 
-import org.gradle.api.tasks.JavaExec
-
-class GenerateParser extends JavaExec {
+class GenerateParser extends BaseTask {
     def source
-    def targetRoot = "gen"
+    def targetRoot
     // would be nice to obtain these from the GC
     def pathToParser
     def pathToPsiRoot
@@ -14,19 +12,25 @@ class GenerateParser extends JavaExec {
         project.afterEvaluate {
             def bnfFile = project.file(source)
             inputs.file bnfFile
-            def parserFile = project.file("$targetRoot$pathToParser")
+            def effectiveTargetRoot = getEffectiveTargetRoot();
+            def parserFile = project.file("$effectiveTargetRoot$pathToParser")
             outputs.file parserFile
-            def psiDir = project.file("$targetRoot$pathToPsiRoot")
+            def psiDir = project.file("$effectiveTargetRoot$pathToPsiRoot")
             outputs.dir psiDir
 
-            args = [project.file(targetRoot), bnfFile]
+            args = [project.file(effectiveTargetRoot), bnfFile]
 
             classpath project.configurations.compile + project.configurations.compileOnly
-            doFirst {
-                project.delete parserFile
-                project.delete psiDir
-            }
+
+            purgeFiles(parserFile, psiDir)
         }
+    }
+
+    private String getEffectiveTargetRoot() {
+        if (targetRoot != null) {
+            return targetRoot;
+        }
+        return getExtension().grammarKitTargetRoot;
     }
 }
 

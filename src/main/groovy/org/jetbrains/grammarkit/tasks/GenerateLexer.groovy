@@ -1,9 +1,6 @@
 package org.jetbrains.grammarkit.tasks
 
-import org.gradle.api.tasks.JavaExec
-import org.jetbrains.grammarkit.GrammarKitPluginExtension
-
-class GenerateLexer extends JavaExec {
+class GenerateLexer extends BaseTask {
 
     def targetDir
     def targetClass
@@ -32,17 +29,15 @@ class GenerateLexer extends JavaExec {
 
             classpath project.configurations.jflex
 
-            doFirst {
-                project.delete targetFile
-            }
+            purgeFiles(targetFile)
         })
     }
 
-    File getSkeleton() {
+    private File getSkeleton() {
         if (skeleton != null) {
             return project.file(skeleton);
         }
-        def ext = project.extensions.findByType(GrammarKitPluginExtension)
-        return ext == null || ext.jflexSkeleton == null ? null : project.file(ext.jflexSkeleton)
+        def ext = getExtension()
+        return ext.jflexSkeleton == null ? null : project.file(ext.jflexSkeleton)
     }
 }
