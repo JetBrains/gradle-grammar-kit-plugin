@@ -1,11 +1,14 @@
 package org.jetbrains.grammarkit.tasks
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+
 class GenerateLexer extends BaseTask {
 
-    def targetDir
-    def targetClass
-    def source
-    def skeleton
+    @Input def targetDir
+    @Input def targetClass
+    @Input def source
+    @Input @Optional def skeleton
 
     GenerateLexer() {
         project.afterEvaluate({
