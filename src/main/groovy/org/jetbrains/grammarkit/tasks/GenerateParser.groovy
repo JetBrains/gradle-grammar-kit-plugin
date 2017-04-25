@@ -1,11 +1,14 @@
 package org.jetbrains.grammarkit.tasks
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+
 class GenerateParser extends BaseTask {
-    def source
-    def targetRoot
+    @Input def source
+    @Input @Optional def targetRoot
     // would be nice to obtain these from the GC
-    def pathToParser
-    def pathToPsiRoot
+    @Input def pathToParser
+    @Input def pathToPsiRoot
 
     GenerateParser() {
         setMain("org.intellij.grammar.Main");
