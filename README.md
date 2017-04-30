@@ -24,26 +24,14 @@ import org.jetbrains.grammarkit.tasks.*
 ```
 
 ### Configuration
-Plugin provides two-level configuration: global, using `grammarKit` extension and per-task configuration. Task-specific configuration has higher precedence. 
-
-#### Global configuration options
+Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 ```groovy
 grammarKit {
     // tag or short commit hash of IntelliJ patched JFlex (see links below), Default is 1.7.0 
     jflexRelease = '34fd65b92a'
 
-    // path to the custom skeleton file. If omitted, default IntelliJ skeleton file will be used
-    jflexSkeleton = '/some/custom/skeleton'
-
-
     // tag or short commit hash of Grammar-Kit to use (see links below). Default is 2017.1 ready version 
     grammarKitRelease = '34fd65b92a'
-    
-    // Target root for GrammarKit-generated files, 'gen' by default
-    grammarKitTargetRoot = 'gen'
-
-    // If this option is set, plugin will remove lexer, parser and psi directory before generation. Default: false 
-    purgeOldFiles = true
 }
 ```
 
@@ -62,6 +50,9 @@ task generatePerlLexer(type: GenerateLexer) {
     
     // optional, path to the task-specific skeleton file. Default: none
     skeleton = '/some/specific/skeleton'
+    
+    // if set, plugin will remove a lexer output file before generating new one. Default: false
+    purgeOldFiles = true
 }
 ```
 
@@ -74,11 +65,14 @@ task generatePerl5Parser(type: GenerateParser) {
     // optional, task-specific root for the generated files. Default: none
     targetRoot = 'gen'
     
-    // path to a parser file, relative to the local targetRoot or global grammarKitTargetRoot 
+    // path to a parser file, relative to the targetRoot  
     pathToParser = '/com/perl5/lang/perl/parser/PerlParserGenerated.java'
     
     // path to a directory with generated psi files, relative to the targetRoot 
     pathToPsiRoot = '/com/perl5/lang/perl/psi'
+
+    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+    purgeOldFiles = true
 }
 ```
 

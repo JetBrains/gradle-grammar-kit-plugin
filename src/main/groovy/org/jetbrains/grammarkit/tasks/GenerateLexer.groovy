@@ -1,14 +1,17 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 
 class GenerateLexer extends BaseTask {
 
-    @Input def targetDir
-    @Input def targetClass
-    @Input def source
-    @Input @Optional def skeleton
+    @Input
+    def targetDir
+    @Input
+    def targetClass
+    @Input
+    def source
+    @Input
+    def skeleton
 
     GenerateLexer() {
         project.afterEvaluate({
@@ -19,11 +22,11 @@ class GenerateLexer extends BaseTask {
             outputs.file targetFile
 
             def newArgs = []
-            def effectiveSkeleton = getEffectiveSkeleton()
-            if (effectiveSkeleton != null) {
+            if (skeleton != null) {
+                def skeletonFile = project.file(skeleton)
                 newArgs.add("--skel")
-                newArgs.add(effectiveSkeleton)
-                inputs.file effectiveSkeleton
+                newArgs.add(skeletonFile)
+                inputs.file skeletonFile
             }
             newArgs.add("-d")
             newArgs.add(project.file(targetDir))
@@ -34,13 +37,5 @@ class GenerateLexer extends BaseTask {
 
             purgeFiles(targetFile)
         })
-    }
-
-    File getEffectiveSkeleton() {
-        if (skeleton != null) {
-            return project.file(skeleton);
-        }
-        def ext = getExtension()
-        return ext.jflexSkeleton == null ? null : project.file(ext.jflexSkeleton)
     }
 }

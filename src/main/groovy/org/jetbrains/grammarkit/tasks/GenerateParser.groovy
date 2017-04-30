@@ -1,39 +1,34 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 
 class GenerateParser extends BaseTask {
-    @Input def source
-    @Input @Optional def targetRoot
+    @Input
+    def source
+    @Input
+    def targetRoot
     // would be nice to obtain these from the GC
-    @Input def pathToParser
-    @Input def pathToPsiRoot
+    @Input
+    def pathToParser
+    @Input
+    def pathToPsiRoot
 
     GenerateParser() {
         setMain("org.intellij.grammar.Main");
         project.afterEvaluate {
             def bnfFile = project.file(source)
             inputs.file bnfFile
-            def effectiveTargetRoot = getEffectiveTargetRoot()
-            def parserFile = project.file("$effectiveTargetRoot$pathToParser")
+            def parserFile = project.file("$targetRoot$pathToParser")
             outputs.file parserFile
-            def psiDir = project.file("$effectiveTargetRoot$pathToPsiRoot")
+            def psiDir = project.file("$targetRoot$pathToPsiRoot")
             outputs.dir psiDir
 
-            args = [project.file(effectiveTargetRoot), bnfFile]
+            args = [project.file(targetRoot), bnfFile]
 
             classpath project.configurations.compile + project.configurations.compileOnly
 
             purgeFiles(parserFile, psiDir)
         }
-    }
-
-    String getEffectiveTargetRoot() {
-        if (targetRoot != null) {
-            return targetRoot;
-        }
-        return getExtension().grammarKitTargetRoot;
     }
 }
 
