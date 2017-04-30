@@ -13,7 +13,7 @@ buildscript {
         maven { url 'https://jitpack.io'}
     }
     dependencies{
-        classpath "com.github.hurricup:gradle-grammar-kit-plugin:4241ee2274"
+        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
     }
 }
 
@@ -84,6 +84,7 @@ task generatePerl5Parser(type: GenerateParser) {
 ## Usage examples
 
 * [Perl5 plugin](https://github.com/Camelcade/Perl5-IDEA/blob/master/build.gradle)
+* [Rust plugin](https://github.com/intellij-rust/intellij-rust/blob/master/build.gradle)
 
 ```
 Copyright 2017 org.jetbrains.intellij.plugins
