@@ -10,7 +10,6 @@ class GenerateLexer extends BaseTask {
     def targetClass
     @Input
     def source
-    @Input
     def skeleton
 
     GenerateLexer() {
