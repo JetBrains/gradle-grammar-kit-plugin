@@ -13,7 +13,7 @@ buildscript {
         maven { url 'https://jitpack.io'}
     }
     dependencies{
-        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1.1"
+        classpath "com.github.JetBrains:gradle-grammar-kit-plugin:2018.1"
     }
 }
 
@@ -27,10 +27,10 @@ import org.jetbrains.grammarkit.tasks.*
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 ```groovy
 grammarKit {
-    // tag or short commit hash of IntelliJ patched JFlex (see links below), Default is 1.7.0 
-    jflexRelease = '34fd65b92a'
+    // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0 
+    jflexRelease = '1.7.0'
 
-    // tag or short commit hash of Grammar-Kit to use (see links below). Default is 2017.1 ready version 
+    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2017.1.2 
     grammarKitRelease = '34fd65b92a'
 }
 ```
@@ -78,7 +78,8 @@ task generatePerl5Parser(type: GenerateParser) {
 
 ## Links
 
-* [IntelliJ-patched JFlex](https://github.com/hurricup/jflex/tree/idea)
+* [IntelliJ-patched JFlex Sources](https://github.com/JetBrains/intellij-deps-jflex)
+* [IntelliJ-patched JFlex Bintray](https://bintray.com/jetbrains/intellij-third-party-dependencies/jflex)
 * [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit)
 
 ## Usage examples
@@ -88,7 +89,7 @@ task generatePerl5Parser(type: GenerateParser) {
 * [Bamboo Soy plugin](https://github.com/google/bamboo-soy/blob/master/build.gradle)
 
 ```
-Copyright 2017 org.jetbrains.intellij.plugins
+Copyright 2017-2018 org.jetbrains.intellij.plugins
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

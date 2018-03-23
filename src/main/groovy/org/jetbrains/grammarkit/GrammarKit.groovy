@@ -7,7 +7,10 @@ import org.gradle.api.plugins.JavaPlugin
 class GrammarKit implements Plugin<Project> {
     @Override
     void apply(Project target) {
-        target.repositories.maven { url 'https://jitpack.io' }
+        target.repositories {
+            maven { url 'https://jitpack.io' }
+            maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+        }
         target.configurations.create('jflex')
         def grammarKitExtension = target.extensions.create("grammarKit", GrammarKitPluginExtension.class)
 
@@ -21,7 +24,7 @@ class GrammarKit implements Plugin<Project> {
                     })
             target.dependencies.add(
                     'jflex',
-                    "com.github.hurricup.jflex:jflex:${grammarKitExtension.jflexRelease}",
+                    "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease}",
                     {
                         exclude group: 'org.jetbrains.plugins'
                         exclude module: 'idea'

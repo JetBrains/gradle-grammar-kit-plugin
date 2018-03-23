@@ -1,7 +1,7 @@
 package org.jetbrains.grammarkit
 
 class GrammarKitPluginExtension {
-    def grammarKitRelease = '34fd65b92a'
+    def grammarKitRelease = '2017.1.2'
     def jflexRelease = '1.7.0'
 }
 
