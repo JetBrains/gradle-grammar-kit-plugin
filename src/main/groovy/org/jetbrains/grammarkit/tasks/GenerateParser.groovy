@@ -18,9 +18,9 @@ class GenerateParser extends BaseTask {
         project.afterEvaluate {
             def bnfFile = project.file(source)
             inputs.file bnfFile
-            def parserFile = project.file("$targetRoot$pathToParser")
+            def parserFile = project.file("$targetRoot/$pathToParser")
             outputs.file parserFile
-            def psiDir = project.file("$targetRoot$pathToPsiRoot")
+            def psiDir = project.file("$targetRoot/$pathToPsiRoot")
             outputs.dir psiDir
 
             args = [project.file(targetRoot), bnfFile]
