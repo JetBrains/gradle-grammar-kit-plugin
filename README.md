@@ -27,11 +27,11 @@ import org.jetbrains.grammarkit.tasks.*
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 ```groovy
 grammarKit {
-    // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0 
-    jflexRelease = '1.7.0'
+    // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0-1 
+    jflexRelease = '1.7.0-1'
 
-    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2017.1.2 
-    grammarKitRelease = '34fd65b92a'
+    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2017.1.4
+    grammarKitRelease = '6452fde524'
 }
 ```
 
