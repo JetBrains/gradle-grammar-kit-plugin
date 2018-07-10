@@ -8,13 +8,8 @@ This plugin simplifies automation of generating lexers and parsers for IntelliJ 
 ### Loading and applying the plugin
 
 ```groovy
-buildscript {
-    repositories {
-        maven { url 'https://jitpack.io'}
-    }
-    dependencies{
-        classpath "com.github.JetBrains:gradle-grammar-kit-plugin:2018.1.3"
-    }
+plugins {
+  id "org.jetbrains.grammarkit" version "2018.1.6"
 }
 
 apply plugin: 'org.jetbrains.grammarkit'
@@ -81,6 +76,7 @@ task generatePerl5Parser(type: GenerateParser) {
 * [IntelliJ-patched JFlex Sources](https://github.com/JetBrains/intellij-deps-jflex)
 * [IntelliJ-patched JFlex Bintray](https://bintray.com/jetbrains/intellij-third-party-dependencies/jflex)
 * [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit)
+* [Plugin page on plugin.gradle.org](https://plugins.gradle.org/plugin/org.jetbrains.grammarkit)
 
 ## Usage examples
 
