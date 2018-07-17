@@ -2,6 +2,8 @@
 
 This plugin simplifies automation of generating lexers and parsers for IntelliJ plugins.
 
+NB: plugin does not support two-pass generation, therefore does not suport method mixins.
+
  
 ## Usage
 
@@ -9,7 +11,7 @@ This plugin simplifies automation of generating lexers and parsers for IntelliJ 
 
 ```groovy
 plugins {
-  id "org.jetbrains.grammarkit" version "2018.1.6"
+  id "org.jetbrains.grammarkit" version "2018.1.7"
 }
 
 apply plugin: 'org.jetbrains.grammarkit'
@@ -25,7 +27,7 @@ grammarKit {
     // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0-1 
     jflexRelease = '1.7.0-1'
 
-    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2017.1.4
+    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2017.1.5
     grammarKitRelease = '6452fde524'
 }
 ```
