@@ -32,7 +32,7 @@ class GenerateLexer extends BaseTask {
             newArgs.add(flexFile)
             args(newArgs)
 
-            classpath project.configurations.jflex
+            classpath project.configurations.compileOnly
 
             purgeFiles(targetFile)
         })

@@ -11,7 +11,6 @@ class GrammarKit implements Plugin<Project> {
             maven { url 'https://jitpack.io' }
             maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
         }
-        target.configurations.create('jflex')
         def grammarKitExtension = target.extensions.create("grammarKit", GrammarKitPluginExtension.class)
 
         target.afterEvaluate {
@@ -23,11 +22,12 @@ class GrammarKit implements Plugin<Project> {
                         exclude module: 'idea'
                     })
             target.dependencies.add(
-                    'jflex',
+                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
                     "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease}",
                     {
                         exclude group: 'org.jetbrains.plugins'
                         exclude module: 'idea'
+                        exclude module: 'ant'
                     }
             )
         }

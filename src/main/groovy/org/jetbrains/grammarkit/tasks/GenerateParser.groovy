@@ -25,7 +25,7 @@ class GenerateParser extends BaseTask {
 
             args = [project.file(targetRoot), bnfFile]
 
-            classpath project.configurations.compile + project.configurations.compileOnly
+            classpath project.configurations.compileOnly
 
             purgeFiles(parserFile, psiDir)
         }
