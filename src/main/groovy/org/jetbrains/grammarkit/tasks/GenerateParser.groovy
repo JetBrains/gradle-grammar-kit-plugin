@@ -25,7 +25,19 @@ class GenerateParser extends BaseTask {
 
             args = [project.file(targetRoot), bnfFile]
 
-            classpath project.configurations.compileOnly
+            def requiredLibs = [
+                    "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
+                    "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit"
+            ]
+
+            classpath project.configurations.compileOnly.files.findAll({
+                for(lib in requiredLibs){
+                    if(it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")){
+                        return true;
+                    }
+                }
+                return false;
+            })
 
             purgeFiles(parserFile, psiDir)
         }
