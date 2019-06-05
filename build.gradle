@@ -17,7 +17,7 @@ dependencies {
     compile localGroovy()
 }
 
-version = '2019.1'
+version = '2019.2'
 group = 'org.jetbrains.intellij.plugins'
 description = "This plugin allows you to generate lexers using JetBrains patched JFLex and parsers using Grammar-Kit."
 
