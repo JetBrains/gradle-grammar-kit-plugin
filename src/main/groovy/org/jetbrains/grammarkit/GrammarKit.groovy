@@ -11,7 +11,7 @@ class GrammarKit implements Plugin<Project> {
         target.afterEvaluate {
             target.repositories {
                 maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
-                maven { url 'https://jitpack.io' }
+                maven { url 'https://www.jitpack.io' }
             }
             target.dependencies.add(
                     JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
