@@ -1,6 +1,7 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 class GenerateLexer extends BaseTask {
 
@@ -11,6 +12,7 @@ class GenerateLexer extends BaseTask {
     @Input
     def source
     @Input
+    @Optional
     def skeleton
 
     GenerateLexer() {
