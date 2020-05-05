@@ -11,7 +11,7 @@ NB: plugin does not support two-pass generation, therefore does not suport metho
 
 ```groovy
 plugins {
-  id "org.jetbrains.grammarkit" version "2020.1.3"
+  id "org.jetbrains.grammarkit" version "2020.1.4"
 }
 
 apply plugin: 'org.jetbrains.grammarkit'
