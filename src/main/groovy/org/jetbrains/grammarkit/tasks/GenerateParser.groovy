@@ -28,7 +28,7 @@ class GenerateParser extends BaseTask {
             def requiredLibs = [
                     "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
                     "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
-                    "platform-util-ui", "platform-concurrency", "fastutil-min-builder",
+                    "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
                     // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
                     // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
                     // while parser generation with CLion distribution
