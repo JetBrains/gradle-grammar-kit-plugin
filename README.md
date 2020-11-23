@@ -11,7 +11,7 @@ NB: plugin does not support two-pass generation, therefore does not suport metho
 
 ```groovy
 plugins {
-    id "org.jetbrains.grammarkit" version "2020.3.1"
+    id "org.jetbrains.grammarkit" version "2020.3.2"
 }
 
 apply plugin: 'org.jetbrains.grammarkit'
@@ -27,7 +27,7 @@ grammarKit {
     // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0-1 
     jflexRelease = '1.7.0-1'
 
-    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 76494a417287856e5bf016d5de22ad2ae74470f4
+    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
     grammarKitRelease = '6452fde524'
 }
 ```
