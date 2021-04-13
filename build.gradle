@@ -13,8 +13,8 @@ apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
+    implementation gradleApi()
+    implementation localGroovy()
 }
 
 version = '2020.3.2'
