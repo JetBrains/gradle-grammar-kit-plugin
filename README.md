@@ -24,7 +24,7 @@ import org.jetbrains.grammarkit.tasks.*
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 ```groovy
 grammarKit {
-    // version of IntelliJ patched JFlex (see bintray link below), Default is 1.7.0-1 
+    // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
     jflexRelease = '1.7.0-1'
 
     // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
@@ -76,7 +76,7 @@ task generatePerl5Parser(type: GenerateParser) {
 ## Links
 
 * [IntelliJ-patched JFlex Sources](https://github.com/JetBrains/intellij-deps-jflex)
-* [IntelliJ-patched JFlex Bintray](https://bintray.com/jetbrains/intellij-third-party-dependencies/jflex)
+* [IntelliJ-patched JFlex](https://repo.labs.intellij.net/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/)
 * [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit)
 * [Plugin page on plugin.gradle.org](https://plugins.gradle.org/plugin/org.jetbrains.grammarkit)
 
