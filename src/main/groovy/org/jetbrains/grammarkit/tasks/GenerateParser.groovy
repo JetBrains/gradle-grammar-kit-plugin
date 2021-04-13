@@ -35,9 +35,9 @@ class GenerateParser extends BaseTask {
                     "testFramework"
             ]
 
-            classpath project.configurations.compileOnly.files.findAll({
-                for(lib in requiredLibs){
-                    if(it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")){
+            classpath project.configurations.compileClasspath.files.findAll({
+                for (lib in requiredLibs) {
+                    if (it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")) {
                         return true;
                     }
                 }
