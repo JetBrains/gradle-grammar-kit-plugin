@@ -10,7 +10,7 @@ class GrammarKit implements Plugin<Project> {
         def grammarKitExtension = target.extensions.create("grammarKit", GrammarKitPluginExtension.class)
         target.afterEvaluate {
             target.repositories {
-                maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+                maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
                 maven { url 'https://www.jitpack.io' }
             }
             target.dependencies.add(
