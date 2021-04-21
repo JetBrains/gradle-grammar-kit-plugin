@@ -25,7 +25,28 @@ class GenerateParser extends BaseTask {
 
             args = [project.file(targetRoot), bnfFile]
 
-            classpath project.configurations.grammarKitClassPath
+            def requiredLibs = [
+                    "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
+                    "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
+                    "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
+                    // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
+                    // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
+                    // while parser generation with CLion distribution
+                    "testFramework"
+            ]
+
+            if (project.configurations.hasProperty("grammarKitClassPath")) {
+                classpath project.configurations.grammarKitClassPath
+            } else {
+                classpath project.configurations.compileClasspath.files.findAll({
+                    for (lib in requiredLibs) {
+                        if (it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+            }
 
             purgeFiles(parserFile, psiDir)
         }
