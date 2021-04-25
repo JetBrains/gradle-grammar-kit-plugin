@@ -76,7 +76,7 @@ task generatePerl5Parser(type: GenerateParser) {
 ## Links
 
 * [IntelliJ-patched JFlex Sources](https://github.com/JetBrains/intellij-deps-jflex)
-* [IntelliJ-patched JFlex](https://repo.labs.intellij.net/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/)
+* [IntelliJ-patched JFlex](https://cache-redirector.jetbrains.com/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/)
 * [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit)
 * [Plugin page on plugin.gradle.org](https://plugins.gradle.org/plugin/org.jetbrains.grammarkit)
 
