@@ -35,14 +35,18 @@ class GenerateParser extends BaseTask {
                     "testFramework"
             ]
 
-            classpath project.configurations.compileClasspath.files.findAll({
-                for (lib in requiredLibs) {
-                    if (it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")) {
-                        return true;
+            if (project.configurations.hasProperty("grammarKitClassPath")) {
+                classpath project.configurations.grammarKitClassPath
+            } else {
+                classpath project.configurations.compileClasspath.files.findAll({
+                    for (lib in requiredLibs) {
+                        if (it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")) {
+                            return true;
+                        }
                     }
-                }
-                return false;
-            })
+                    return false;
+                })
+            }
 
             purgeFiles(parserFile, psiDir)
         }

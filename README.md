@@ -29,6 +29,9 @@ grammarKit {
 
     // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
     grammarKitRelease = '6452fde524'
+  
+    // optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
+    intellijRelease = '203.7717.81'
 }
 ```
 
