@@ -32,7 +32,7 @@ class GenerateParser extends BaseTask {
                     // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
                     // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
                     // while parser generation with CLion distribution
-                    "testFramework"
+                    "testFramework", "3rd-party"
             ]
 
             if (project.configurations.hasProperty("grammarKitClassPath")) {
