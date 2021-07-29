@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 
-class GrammarKit implements Plugin<Project> {
+class GrammarKitPlugin implements Plugin<Project> {
     @Override
     void apply(Project target) {
         def grammarKitExtension = target.extensions.create("grammarKit", GrammarKitPluginExtension.class)
