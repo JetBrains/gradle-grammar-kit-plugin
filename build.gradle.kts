@@ -8,21 +8,12 @@ plugins {
     id("maven-publish")
     id("com.gradle.plugin-publish") version "0.15.0"
     id("org.jetbrains.changelog") version "1.2.1"
+    id("groovy")
 }
 
-//buildscript {
-//    repositories {
-//        maven {
-//            url "https://plugins.gradle.org/m2/"
-//        }
-//    }
-//    dependencies {
-//        classpath "com.gradle.publish:plugin-publish-plugin:0.11.0"
-//    }
-//}
-
-//apply plugin: "com.gradle.plugin-publish"
-//apply plugin: 'groovy'
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     implementation(gradleApi())
