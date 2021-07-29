@@ -28,7 +28,7 @@ gradlePlugin {
     plugins.create("grammarKitPlugin") {
         id = "org.jetbrains.grammarkit"
         displayName = "Gradle Grammar-Kit Plugin"
-        implementationClass = "org.jetbrains.grammarkit.GrammarKit"
+        implementationClass = "org.jetbrains.grammarkit.GrammarKitPlugin"
     }
 }
 
