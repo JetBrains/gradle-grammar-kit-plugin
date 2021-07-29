@@ -1,10 +1,14 @@
+[![official JetBrains project](https://jb.gg/badges/official.svg)][jb:confluence-on-gh]
+[![Twitter Follow](https://img.shields.io/twitter/follow/JBPlatform?style=flat)][jb:twitter]
+[![Build](https://github.com/JetBrains/gradle-grammar-kit-plugin/workflows/Build/badge.svg)][gh:build]
+[![Slack](https://img.shields.io/badge/Slack-%23intellij--platform-blue)][jb:slack]
+
 # gradle-grammarkit-plugin
 
-This plugin simplifies automation of generating lexers and parsers for IntelliJ plugins.
+This plugin simplifies the automation of generating lexers and parsers for IntelliJ plugins.
 
-NB: plugin does not support two-pass generation, therefore does not suport method mixins.
+NB: the plugin does not support two-pass generation. Therefore, it does not support method mixins.
 
- 
 ## Usage
 
 ### Loading and applying the plugin
@@ -21,7 +25,9 @@ import org.jetbrains.grammarkit.tasks.*
 ```
 
 ### Configuration
+
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
+
 ```groovy
 grammarKit {
     // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
@@ -36,7 +42,9 @@ grammarKit {
 ```
 
 ## Tasks
+
 ### Generating lexer
+
 ```groovy
 task generatePerlLexer(type: GenerateLexer) {
     // source flex file
@@ -57,21 +65,22 @@ task generatePerlLexer(type: GenerateLexer) {
 ```
 
 ### Generating parser
+
 ```groovy
 task generatePerl5Parser(type: GenerateParser) {
     // source bnf file
     source = "grammar/Perl5.bnf"
-    
+
     // optional, task-specific root for the generated files. Default: none
     targetRoot = 'gen'
-    
+
     // path to a parser file, relative to the targetRoot  
     pathToParser = '/com/perl5/lang/perl/parser/PerlParserGenerated.java'
-    
+
     // path to a directory with generated psi files, relative to the targetRoot 
     pathToPsiRoot = '/com/perl5/lang/perl/psi'
 
-    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+    // if set, the plugin will remove a parser output file and psi output directory before generating new ones. Default: false
     purgeOldFiles = true
 }
 ```
@@ -89,20 +98,8 @@ task generatePerl5Parser(type: GenerateParser) {
 * [Rust plugin](https://github.com/intellij-rust/intellij-rust/blob/master/build.gradle.kts)
 * [Bamboo Soy plugin](https://github.com/google/bamboo-soy/blob/master/build.gradle)
 
-```
-Copyright 2017-2018 org.jetbrains.intellij.plugins
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-```
-
+[gh:build]: https://github.com/JetBrains/gradle-grammar-kit-plugin/actions?query=workflow%3ABuild
+[jb:confluence-on-gh]: https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub
+[jb:slack]: https://plugins.jetbrains.com/slack
+[jb:twitter]: https://twitter.com/JBPlatform
