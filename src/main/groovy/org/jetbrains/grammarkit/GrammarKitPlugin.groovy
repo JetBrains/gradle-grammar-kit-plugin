@@ -16,6 +16,9 @@ class GrammarKitPlugin implements Plugin<Project> {
         )
 
         project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask.class) {
+            it.description = "Generates lexers for IntelliJ-based plugin"
+            it.group = GrammarKitConstants.GROUP_NAME
+
             def targetFile = project.file("${it.targetDir}/${it.targetClass}.java")
             it.targetFile = targetFile
 
@@ -27,6 +30,8 @@ class GrammarKitPlugin implements Plugin<Project> {
         }
 
         project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask.class) {
+            it.description = "Generates parsers for IntelliJ-based plugin"
+            it.group = GrammarKitConstants.GROUP_NAME
 
 //            it.parserFile = project.file("$it.targetRoot/$it.pathToParser")
 //            it.psiDir = project.file("$it.targetRoot/$it.pathToPsiRoot")

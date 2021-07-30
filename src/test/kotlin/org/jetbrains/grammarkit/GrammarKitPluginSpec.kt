@@ -9,6 +9,8 @@ class GrammarKitPluginSpec : GrammarKitPluginBase() {
     fun `grammarKit-specific tasks`() {
         assertEquals(
             listOf(
+                GrammarKitConstants.GENERATE_LEXER_TASK_NAME,
+                GrammarKitConstants.GENERATE_PARSER_TASK_NAME,
             ),
             tasks(GrammarKitConstants.GROUP_NAME),
         )
