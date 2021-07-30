@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-fun properties(key: String) = project.findProperty(key).toString()
+fun properties(key: String) = project.findProperty(key)?.toString()
 
 plugins {
     kotlin("jvm") version "1.5.21"
@@ -18,10 +18,14 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
+
+    testImplementation(gradleTestKit())
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
 }
 
-version = properties("version")
-group = properties("group")
+version = properties("version") ?: ""
+group = properties("group") ?: ""
 description = "This plugin allows you to generate lexers using JetBrains patched JFLex and parsers using Grammar-Kit."
 
 gradlePlugin {
@@ -40,6 +44,14 @@ pluginBundle {
 }
 
 tasks {
+    // TODO: remove after migration
+    withType<GroovyCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+        dependsOn(compileKotlin)
+        classpath += files(compileKotlin.get().destinationDir)
+    }
+
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
@@ -50,4 +62,20 @@ tasks {
         gradleVersion = properties("gradleVersion")
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
     }
+
+    test {
+        configureTests(this)
+    }
+}
+
+fun configureTests(testTask: Test) {
+    val testGradleHomePath = "$buildDir/testGradleHome"
+    testTask.doFirst {
+        File(testGradleHomePath).mkdir()
+    }
+    testTask.systemProperties["test.gradle.home"] = testGradleHomePath
+    testTask.systemProperties["test.gradle.default"] = properties("gradleVersion")
+    testTask.systemProperties["test.gradle.version"] = properties("testGradleVersion")
+    testTask.systemProperties["test.gradle.arguments"] = properties("testGradleArguments")
+    testTask.outputs.dir(testGradleHomePath)
 }
