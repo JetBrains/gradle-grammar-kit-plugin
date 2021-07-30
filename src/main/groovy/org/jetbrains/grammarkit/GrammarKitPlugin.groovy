@@ -15,6 +15,12 @@ class GrammarKitPlugin implements Plugin<Project> {
                 GrammarKitPluginExtension.class,
         )
 
+//        grammarKitExtension.grammarKitRelease.set(GrammarKitConstants.VERSION_LATEST)
+//        grammarKitExtension.jflexRelease.set(GrammarKitConstants.VERSION_LATEST)
+        grammarKitExtension.grammarKitRelease.set("2020.3.1")
+        grammarKitExtension.jflexRelease.set("1.7.0-1")
+        grammarKitExtension.intellijRelease.set(null)
+
         project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask.class) {
             it.description = "Generates lexers for IntelliJ-based plugin"
             it.group = GrammarKitConstants.GROUP_NAME
@@ -53,17 +59,17 @@ class GrammarKitPlugin implements Plugin<Project> {
             maven { url 'https://www.jitpack.io' }
         }
         project.afterEvaluate {
-            if (grammarKitExtension.intellijRelease == null) {
+            if (grammarKitExtension.intellijRelease.getOrNull() == null) {
                 project.dependencies.add(
                         JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                        "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease}",
+                        "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease.get()}",
                         {
                             exclude group: 'org.jetbrains.plugins'
                             exclude module: 'idea'
                         })
                 project.dependencies.add(
                         JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                        "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease}",
+                        "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease.get()}",
                         {
                             exclude group: 'org.jetbrains.plugins'
                             exclude module: 'idea'
@@ -71,7 +77,7 @@ class GrammarKitPlugin implements Plugin<Project> {
                         }
                 )
             } else {
-                configureGrammarKitClassPath()
+                configureGrammarKitClassPath(project)
             }
         }
     }
@@ -82,27 +88,27 @@ class GrammarKitPlugin implements Plugin<Project> {
         }
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease}"
+                "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease}"
+                "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:indexing-impl:${grammarKitExtension.intellijRelease}"
+                "com.jetbrains.intellij.platform:indexing-impl:${grammarKitExtension.intellijRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:analysis-impl:${grammarKitExtension.intellijRelease}"
+                "com.jetbrains.intellij.platform:analysis-impl:${grammarKitExtension.intellijRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:core-impl:${grammarKitExtension.intellijRelease}"
+                "com.jetbrains.intellij.platform:core-impl:${grammarKitExtension.intellijRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:lang-impl:${grammarKitExtension.intellijRelease}"
+                "com.jetbrains.intellij.platform:lang-impl:${grammarKitExtension.intellijRelease.get()}"
         )
         project.dependencies.add(
                 project.configurations.grammarKitClassPath.name,
