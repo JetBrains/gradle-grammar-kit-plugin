@@ -1,8 +1,9 @@
 package org.jetbrains.grammarkit.tasks
 
+import org.gradle.api.model.ObjectFactory
+
 /**
  * @deprecated Use {@link GenerateParserTask}
  */
-@Deprecated
-class GenerateParser extends GenerateParserTask {
-}
+@Deprecated("Use GenerateParserTask")
+class GenerateParser(objectFactory: ObjectFactory) : GenerateParserTask(objectFactory)
