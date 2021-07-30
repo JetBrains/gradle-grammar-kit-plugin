@@ -40,7 +40,6 @@ open class GenerateLexerTask @Inject constructor(objectFactory: ObjectFactory) :
 
     @TaskAction
     fun generateLexer() {
-
         ByteArrayOutputStream().use { os ->
             try {
                 project.javaexec {
