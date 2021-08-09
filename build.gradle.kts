@@ -8,7 +8,6 @@ plugins {
     id("maven-publish")
     id("com.gradle.plugin-publish") version "0.15.0"
     id("org.jetbrains.changelog") version "1.2.1"
-    id("groovy")
 }
 
 repositories {
@@ -44,14 +43,6 @@ pluginBundle {
 }
 
 tasks {
-    // TODO: remove after migration
-    withType<GroovyCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
-        dependsOn(compileKotlin)
-        classpath += files(compileKotlin.get().destinationDir)
-    }
-
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
