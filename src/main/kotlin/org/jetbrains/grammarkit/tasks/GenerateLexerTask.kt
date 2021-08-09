@@ -13,10 +13,13 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-open class GenerateLexerTask @Inject constructor(objectFactory: ObjectFactory) : ConventionTask() {
+open class GenerateLexerTask @Inject constructor(
+    private val objectFactory: ObjectFactory,
+) : ConventionTask() {
 
     @OutputDirectory
     val targetDir: DirectoryProperty = objectFactory.directoryProperty()
@@ -36,7 +39,7 @@ open class GenerateLexerTask @Inject constructor(objectFactory: ObjectFactory) :
 
     @Input
     @Optional
-    val purgeOldFiles: Property<String> = objectFactory.property(Boolean::class.java)
+    val purgeOldFiles: Property<Boolean> = objectFactory.property(Boolean::class.java)
 
     @TaskAction
     fun generateLexer() {
@@ -49,7 +52,7 @@ open class GenerateLexerTask @Inject constructor(objectFactory: ObjectFactory) :
                     it.standardOutput = os
                 }
             } catch (e: Exception) {
-                throw GradleException (os.toString().trim(), e)
+                throw GradleException(os.toString().trim(), e)
             }
 
             println(os.toString())
@@ -58,24 +61,30 @@ open class GenerateLexerTask @Inject constructor(objectFactory: ObjectFactory) :
 
     private fun getArgs(): List<String> {
         val args = mutableListOf(
-            "-d", targetDir.get(),
+            "-d", targetDir.path,
         )
 
-        skeleton.orNull?.let {
+        if (skeleton.isPresent) {
             args.add("--skel")
-            args.add(it)
+            args.add(skeleton.path)
         }
 
-        args.add(source.get().asFile.cannonicalPath)
+        args.add(source.path)
 
         return args
     }
 
     private fun getClasspath(): FileCollection {
-        if (project.configurations.hasProperty("grammarKitClassPath")) {
-            return project.configurations.grammarKitClassPath
-        } else {
-            return project.configurations.compileClasspath.files.findAll({ it.name.startsWith("jflex") })
+        val grammarKitClassPathConfiguration = project.configurations.getByName("grammarKitClassPath")
+        val compileClasspathConfiguration = project.configurations.getByName("grammarKitClassPath")
+
+        return when {
+            !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration
+            else -> compileClasspathConfiguration.files.filter {
+                it.name.startsWith("jflex")
+            }.run {
+                objectFactory.fileCollection().from(this)
+            }
         }
     }
 }

@@ -7,11 +7,19 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
+import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-open class GenerateParserTask @Inject constructor(objectFactory: ObjectFactory) : ConventionTask() {
+open class GenerateParserTask @Inject constructor(
+    private val objectFactory: ObjectFactory,
+) : ConventionTask() {
 
     @InputFile
     val source: RegularFileProperty = objectFactory.fileProperty()
@@ -20,37 +28,35 @@ open class GenerateParserTask @Inject constructor(objectFactory: ObjectFactory) 
     val targetRoot: DirectoryProperty = objectFactory.directoryProperty()
 
     @Input
-    val pathToParser: Property<String> = objectFactory.property(Boolean::class.java)
+    val pathToParser: Property<String> = objectFactory.property(String::class.java)
 
     @Input
-    val pathToPsiRoot: Property<String> = objectFactory.property(Boolean::class.java)
+    val pathToPsiRoot: Property<String> = objectFactory.property(String::class.java)
 
     @OutputFile
     @Optional
     val parserFile: RegularFileProperty = objectFactory.fileProperty()
-//    def parserFile = project.file("$targetRoot/$pathToParser")
 
     @OutputDirectory
     @Optional
     val psiDir: DirectoryProperty = objectFactory.directoryProperty()
-//    def psiDir = project.file("$targetRoot/$pathToPsiRoot")
 
     @Input
     @Optional
-    val purgeOldFiles: Property<String> = objectFactory.property(Boolean::class.java)
+    val purgeOldFiles: Property<Boolean> = objectFactory.property(Boolean::class.java)
+
+    private val requiredLibs = listOf(
+        "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
+        "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
+        "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
+        // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
+        // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
+        // while parser generation with CLion distribution
+        "testFramework", "3rd-party"
+    )
 
     @TaskAction
     fun generateParser() {
-        val requiredLibs = listOf(
-            "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
-            "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
-            "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
-            // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
-            // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
-            // while parser generation with CLion distribution
-            "testFramework", "3rd-party"
-        )
-
         ByteArrayOutputStream().use { os ->
             try {
                 project.javaexec {
@@ -68,22 +74,21 @@ open class GenerateParserTask @Inject constructor(objectFactory: ObjectFactory) 
         }
     }
 
-    private fun getArgs(): List<String> {
-        return listOf(project.file(targetRoot), source)
-    }
+    private fun getArgs() = listOf(targetRoot, source).map { it.path    }
 
     private fun getClasspath(): FileCollection {
-        if (project.configurations.hasProperty("grammarKitClassPath")) {
-            return project.configurations.grammarKitClassPath
-        } else {
-            return project.configurations.compileClasspath.files.findAll({
-                for (lib in requiredLibs) {
-                    if (it.name.equalsIgnoreCase("${lib}.jar") || it.name.startsWith("${lib}-")) {
-                        return true;
-                    }
+        val grammarKitClassPathConfiguration = project.configurations.getByName("grammarKitClassPath")
+        val compileClasspathConfiguration = project.configurations.getByName("compileClasspath")
+
+        return when {
+            !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration
+            else -> compileClasspathConfiguration.files.filter { file ->
+                requiredLibs.any {
+                    file.name.equals("$it.jar", true) || file.name.startsWith("$it-")
                 }
-                return false;
-            })
+            }.run {
+                objectFactory.fileCollection().from(this)
+            }
         }
     }
 }

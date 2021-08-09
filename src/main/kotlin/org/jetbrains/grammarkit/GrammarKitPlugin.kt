@@ -5,47 +5,52 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
+import java.net.URI
 
-class GrammarKitPlugin implements Plugin<Project> {
+@Suppress("unused")
+open class GrammarKitPlugin : Plugin<Project> {
 
-    @Override
-    void apply(Project project) {
-        def grammarKitExtension = project.extensions.create(
-                GrammarKitConstants.GROUP_NAME,
-                GrammarKitPluginExtension.class,
+    override fun apply(project: Project) {
+        val extension = project.extensions.create(
+            GrammarKitConstants.GROUP_NAME,
+            GrammarKitPluginExtension::class.java,
         )
 
-//        grammarKitExtension.grammarKitRelease.set(GrammarKitConstants.VERSION_LATEST)
-//        grammarKitExtension.jflexRelease.set(GrammarKitConstants.VERSION_LATEST)
-        grammarKitExtension.grammarKitRelease.set("2020.3.1")
-        grammarKitExtension.jflexRelease.set("1.7.0-1")
-        grammarKitExtension.intellijRelease.set(null)
+        extension.grammarKitRelease.set("2020.3.1")
+        extension.jflexRelease.set("1.7.0-1")
 
-        project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask.class) {
-            it.description = "Generates lexers for IntelliJ-based plugin"
-            it.group = GrammarKitConstants.GROUP_NAME
+        project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) { task ->
+            task.description = "Generates lexers for IntelliJ-based plugin"
+            task.group = GrammarKitConstants.GROUP_NAME
 
-            def targetFile = project.file("${it.targetDir}/${it.targetClass}.java")
-            it.targetFile = targetFile
+            task.targetFile.convention {
+                project.file("${task.targetDir}/${task.targetClass}.java")
+            }
 
-            doFirst {
-                if (it.purgeOldFiles) {
-                    project.delete(targetFile)
+            task.doFirst {
+                if (task.purgeOldFiles.get()) {
+                    project.delete(task.targetFile.get())
                 }
             }
         }
 
-        project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask.class) {
-            it.description = "Generates parsers for IntelliJ-based plugin"
-            it.group = GrammarKitConstants.GROUP_NAME
+        project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask::class.java) { task ->
+            task.description = "Generates parsers for IntelliJ-based plugin"
+            task.group = GrammarKitConstants.GROUP_NAME
 
-//            it.parserFile = project.file("$it.targetRoot/$it.pathToParser")
-//            it.psiDir = project.file("$it.targetRoot/$it.pathToPsiRoot")
+            task.parserFile.convention {
+                project.file("$task.targetRoot/$task.pathToParser")
+            }
+            task.psiDir.convention(
+                project.layout.dir(project.provider {
+                    project.file("${task.targetRoot}/${task.pathToPsiRoot}")
+                })
+            )
 
-            doFirst {
-                if (it.purgeOldFiles) {
-                    def parserFile = project.file("${it.targetRoot}/${it.pathToParser}")
-                    def psiDir = project.file("${it.targetRoot}/${it.pathToPsiRoot}")
+            task.doFirst {
+                if (task.purgeOldFiles.get()) {
+                    val parserFile = project.file("${task.targetRoot}/${task.pathToParser}")
+                    val psiDir = project.file("${task.targetRoot}/${task.pathToPsiRoot}")
 
                     project.delete(parserFile)
                     project.delete(psiDir)
@@ -53,74 +58,78 @@ class GrammarKitPlugin implements Plugin<Project> {
             }
         }
 
-        project.repositories {
-            maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
-            maven { url "https://www.jetbrains.com/intellij-repository/releases" }
-            maven { url 'https://www.jitpack.io' }
+        project.repositories.apply {
+            maven {
+                it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
+            }
+            maven {
+                it.url = URI("https://www.jetbrains.com/intellij-repository/releases")
+            }
         }
+
         project.afterEvaluate {
-            if (grammarKitExtension.intellijRelease.getOrNull() == null) {
+            if (extension.intellijRelease.orNull == null) {
                 project.dependencies.add(
-                        JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                        "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease.get()}",
-                        {
-                            exclude group: 'org.jetbrains.plugins'
-                            exclude module: 'idea'
-                        })
-                project.dependencies.add(
-                        JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                        "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease.get()}",
-                        {
-                            exclude group: 'org.jetbrains.plugins'
-                            exclude module: 'idea'
-                            exclude module: 'ant'
-                        }
+                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
+                    "com.github.JetBrains:Grammar-Kit:${extension.grammarKitRelease.get()}",
                 )
+                project.dependencies.add(
+                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
+                    "org.jetbrains.intellij.deps.jflex:jflex:${extension.jflexRelease.get()}",
+                )
+                project.dependencies.add(
+                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
+                    "org.jetbrains.intellij.deps.jflex:jflex:${extension.jflexRelease.get()}",
+                )
+                project.dependencies.add(
+                    GrammarKitConstants.BOM_CONFIGURATION_NAME,
+                    "dev.thiagosouto:plugin:1.3.4",
+                )
+
+                project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).apply {
+                    exclude(mapOf(
+                        "group" to "org.jetbrains.plugins",
+                        "module" to "ant",
+                    ))
+                    exclude(mapOf(
+                        "group" to "org.jetbrains.plugins",
+                        "module" to "idea",
+                    ))
+                }
+                project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).apply {
+                    exclude(mapOf(
+                        "group" to "soutoPackage",
+                        "module" to "test1",
+                    ))
+                }
             } else {
-                configureGrammarKitClassPath(project)
+                configureGrammarKitClassPath(project, extension)
             }
         }
     }
 
-    void configureGrammarKitClassPath(Project project) {
-        project.configurations {
-            grammarKitClassPath
-        }
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "com.github.JetBrains:Grammar-Kit:${grammarKitExtension.grammarKitRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "org.jetbrains.intellij.deps.jflex:jflex:${grammarKitExtension.jflexRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:indexing-impl:${grammarKitExtension.intellijRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:analysis-impl:${grammarKitExtension.intellijRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:core-impl:${grammarKitExtension.intellijRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "com.jetbrains.intellij.platform:lang-impl:${grammarKitExtension.intellijRelease.get()}"
-        )
-        project.dependencies.add(
-                project.configurations.grammarKitClassPath.name,
-                "org.jetbrains.intellij.deps:asm-all:7.0.1"
-        )
-        project.configurations.grammarKitClassPath {
-            exclude group: 'com.jetbrains.rd'
-            exclude group: 'org.jetbrains.marketplace'
-            exclude group: 'org.roaringbitmap'
-            exclude group: 'org.jetbrains.plugins'
-            exclude module: 'idea'
-            exclude module: 'ant'
+    private fun configureGrammarKitClassPath(project: Project, extension: GrammarKitPluginExtension) {
+        val grammarKitRelease = extension.grammarKitRelease.get()
+        val jflexRelease = extension.jflexRelease.get()
+        val intellijRelease = extension.intellijRelease.get()
+
+        project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME) {
+            it.dependencies.addAll(listOf(
+                "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
+                "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
+                "com.jetbrains.intellij.platform:indexing-impl:$intellijRelease",
+                "com.jetbrains.intellij.platform:analysis-impl:$intellijRelease",
+                "com.jetbrains.intellij.platform:core-impl:$intellijRelease",
+                "com.jetbrains.intellij.platform:lang-impl:$intellijRelease",
+                "org.jetbrains.intellij.deps:asm-all:7.0.1",
+            ).map(project.dependencies::create))
+
+            it.exclude(mapOf("group" to "com.jetbrains.rd"))
+            it.exclude(mapOf("group" to "org.jetbrains.marketplace"))
+            it.exclude(mapOf("group" to "org.roaringbitmap"))
+            it.exclude(mapOf("group" to "org.jetbrains.plugins"))
+            it.exclude(mapOf("module" to "idea"))
+            it.exclude(mapOf("module" to "ant"))
         }
     }
 }
