@@ -16,8 +16,8 @@ open class GrammarKitPlugin : Plugin<Project> {
             GrammarKitPluginExtension::class.java,
         )
 
-        extension.grammarKitRelease.set("2020.3.1")
-        extension.jflexRelease.set("1.7.0-1")
+        extension.grammarKitRelease.set(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
+        extension.jflexRelease.set(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
 
         project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) { task ->
             task.description = "Generates lexers for IntelliJ-based plugin"
@@ -68,18 +68,22 @@ open class GrammarKitPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            if (extension.intellijRelease.orNull == null) {
+            val grammarKitRelease = extension.grammarKitRelease.get()
+            val jflexRelease = extension.jflexRelease.get()
+            val intellijRelease = extension.intellijRelease.orNull
+
+            if (intellijRelease == null) {
                 project.dependencies.add(
                     JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "com.github.JetBrains:Grammar-Kit:${extension.grammarKitRelease.get()}",
+                    "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
                 )
                 project.dependencies.add(
                     JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "org.jetbrains.intellij.deps.jflex:jflex:${extension.jflexRelease.get()}",
+                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                 )
                 project.dependencies.add(
                     JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "org.jetbrains.intellij.deps.jflex:jflex:${extension.jflexRelease.get()}",
+                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                 )
                 project.dependencies.add(
                     GrammarKitConstants.BOM_CONFIGURATION_NAME,
@@ -103,16 +107,12 @@ open class GrammarKitPlugin : Plugin<Project> {
                     ))
                 }
             } else {
-                configureGrammarKitClassPath(project, extension)
+                configureGrammarKitClassPath(project, grammarKitRelease, jflexRelease, intellijRelease)
             }
         }
     }
 
-    private fun configureGrammarKitClassPath(project: Project, extension: GrammarKitPluginExtension) {
-        val grammarKitRelease = extension.grammarKitRelease.get()
-        val jflexRelease = extension.jflexRelease.get()
-        val intellijRelease = extension.intellijRelease.get()
-
+    private fun configureGrammarKitClassPath(project: Project, grammarKitRelease: String, jflexRelease: String, intellijRelease: String) {
         project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME) {
             it.dependencies.addAll(listOf(
                 "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
