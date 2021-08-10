@@ -75,7 +75,7 @@ abstract class GrammarKitPluginBase {
             .forwardOutput()
             .withPluginClasspath()
             .withTestKitDir(File(gradleHome))
-            .withArguments(*tasks, "--stacktrace", /*"--configuration-cache",*/ *gradleArguments)
+            .withArguments(*tasks, "--stacktrace", "--configuration-cache", *gradleArguments)
 
     fun tasks(groupName: String): List<String> = build(ProjectInternal.TASKS_TASK).output.lines().run {
         val start = indexOfFirst { it.equals("$groupName tasks", ignoreCase = true) } + 2
