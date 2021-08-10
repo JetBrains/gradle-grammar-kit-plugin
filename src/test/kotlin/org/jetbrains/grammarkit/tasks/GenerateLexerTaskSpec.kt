@@ -20,7 +20,7 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
         val result = build(GrammarKitConstants.GENERATE_LEXER_TASK_NAME)
 
         assertTrue(result.output.contains("> Task :${GrammarKitConstants.GENERATE_LEXER_TASK_NAME}"))
-        assertTrue(result.output.contains("Writing code to \"${adjustWindowsPath(dir.canonicalPath)}/gen/org/jetbrains/grammarkit/lexer/GeneratedLexer.java\""))
+        assertTrue(adjustWindowsPath(result.output).contains("Writing code to \"${adjustWindowsPath(dir.canonicalPath)}/gen/org/jetbrains/grammarkit/lexer/GeneratedLexer.java\""))
     }
 
     @Test

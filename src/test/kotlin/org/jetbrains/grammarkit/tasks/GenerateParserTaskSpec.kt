@@ -21,7 +21,7 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
         val result = build(GrammarKitConstants.GENERATE_PARSER_TASK_NAME)
 
         assertTrue(result.output.contains("> Task :${GrammarKitConstants.GENERATE_PARSER_TASK_NAME}"))
-        assertTrue(result.output.contains("Example.bnf parser generated to ${adjustWindowsPath(dir.canonicalPath)}/gen"))
+        assertTrue(adjustWindowsPath(result.output).contains("Example.bnf parser generated to ${adjustWindowsPath(dir.canonicalPath)}/gen"))
     }
 
     @Test
