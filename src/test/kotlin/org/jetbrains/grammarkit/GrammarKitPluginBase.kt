@@ -114,4 +114,6 @@ abstract class GrammarKitPluginBase {
     private fun File.append(content: String) = appendText(content.trimIndent() + "\n")
 
     protected fun getResourceFile(name: String) = javaClass.classLoader.getResource(name)?.file
+
+    protected fun adjustWindowsPath(s: String) = s.replace("\\", "/")
 }
