@@ -81,7 +81,6 @@ open class GenerateParserTask @Inject constructor(
             }
 
             println(os.toString())
-
         }
     }
 
@@ -89,7 +88,7 @@ open class GenerateParserTask @Inject constructor(
 
     private fun getClasspath(): FileCollection {
         val grammarKitClassPathConfiguration = project.configurations.getByName(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
-        val compileClasspathConfiguration = project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
+        val compileClasspathConfiguration = project.configurations.getByName(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
 
         return when {
             !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration
