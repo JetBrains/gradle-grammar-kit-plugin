@@ -5,6 +5,8 @@
 
 # gradle-grammarkit-plugin
 
+**This project requires Gradle 6.6 or newer**
+
 This plugin simplifies the automation of generating lexers and parsers for IntelliJ plugins.
 
 NB: the plugin does not support two-pass generation. Therefore, it does not support method mixins.
@@ -17,11 +19,6 @@ NB: the plugin does not support two-pass generation. Therefore, it does not supp
 plugins {
     id "org.jetbrains.grammarkit" version "2021.1.3"
 }
-
-apply plugin: 'org.jetbrains.grammarkit'
-
-// import is optional to make task creation easier
-import org.jetbrains.grammarkit.tasks.*
 ```
 
 ### Configuration
@@ -46,7 +43,7 @@ grammarKit {
 ### Generating lexer
 
 ```groovy
-task generatePerlLexer(type: GenerateLexer) {
+generateLexer {
     // source flex file
     source = "grammar/Perl.flex"
     
@@ -67,7 +64,7 @@ task generatePerlLexer(type: GenerateLexer) {
 ### Generating parser
 
 ```groovy
-task generatePerl5Parser(type: GenerateParser) {
+generateParser {
     // source bnf file
     source = "grammar/Perl5.bnf"
 
