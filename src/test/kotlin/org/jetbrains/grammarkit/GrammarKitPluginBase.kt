@@ -12,6 +12,10 @@ import kotlin.test.BeforeTest
 
 abstract class GrammarKitPluginBase {
 
+    companion object {
+        const val DEFAULT_TESTING_INTELLIJ_RELEASE = "211.7628.24"
+    }
+
     private val gradleDefault = System.getProperty("test.gradle.default")
     private val gradleVersion = System.getProperty("test.gradle.version").takeUnless { it.isNullOrEmpty() } ?: gradleDefault
     private val gradleArguments = System.getProperty("test.gradle.arguments", "")
@@ -30,14 +34,18 @@ abstract class GrammarKitPluginBase {
 
         buildFile.groovy("""
             plugins {
-                id 'java'
-                id 'org.jetbrains.grammarkit'
+                id "java"
+                id "org.jetbrains.grammarkit"
             }
             sourceCompatibility = 1.8
             targetCompatibility = 1.8
 
             repositories {
                 mavenCentral()
+            }
+            
+            grammarKit {
+                intellijRelease = "$DEFAULT_TESTING_INTELLIJ_RELEASE"
             }
         """)
 

@@ -36,7 +36,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
 
             task.doFirst {
-                if (task.purgeOldFiles.get()) {
+                if (task.purgeOldFiles.orNull == true) {
                     project.delete(task.targetFile.get())
                 }
             }
@@ -65,7 +65,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             )
 
             task.doFirst {
-                if (task.purgeOldFiles.get()) {
+                if (task.purgeOldFiles.orNull == true) {
                     val parserFile = project.file("${task.targetRoot.get()}/${task.pathToParser.get()}")
                     val psiDir = project.file("${task.targetRoot.get()}/${task.pathToPsiRoot.get()}")
 
@@ -80,7 +80,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
             }
             maven {
-                it.url = URI("https://www.jetbrains.com/intellij-repository/releases")
+                it.url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
             maven {
                 it.url = URI("https://www.jitpack.io")
