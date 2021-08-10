@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.PluginInstantiationException
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
@@ -13,6 +14,8 @@ import java.net.URI
 open class GrammarKitPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        checkGradleVersion(project)
+
         val extension = project.extensions.create(
             GrammarKitConstants.GROUP_NAME,
             GrammarKitPluginExtension::class.java,
@@ -188,5 +191,11 @@ open class GrammarKitPlugin : Plugin<Project> {
     ) = when {
         !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration.files
         else -> compileClasspathConfiguration.files.filter(filter)
+    }
+
+    private fun checkGradleVersion(project: Project) {
+        if (Version.parse(project.gradle.gradleVersion) < Version.parse("6.6")) {
+            throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle 6.6 and higher")
+        }
     }
 }
