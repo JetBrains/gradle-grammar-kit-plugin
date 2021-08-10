@@ -23,8 +23,16 @@ open class GrammarKitPlugin : Plugin<Project> {
             task.description = "Generates lexers for IntelliJ-based plugin"
             task.group = GrammarKitConstants.GROUP_NAME
 
+            task.sourceFile.convention {
+                project.file(task.source.get())
+            }
+            task.targetOutputDir.convention(
+                project.layout.dir(project.provider {
+                    project.file(task.targetDir.get())
+                })
+            )
             task.targetFile.convention {
-                project.file("${task.targetDir}/${task.targetClass}.java")
+                project.file("${task.targetDir.get()}/${task.targetClass.get()}.java")
             }
 
             task.doFirst {
@@ -38,19 +46,28 @@ open class GrammarKitPlugin : Plugin<Project> {
             task.description = "Generates parsers for IntelliJ-based plugin"
             task.group = GrammarKitConstants.GROUP_NAME
 
+            task.sourceFile.convention {
+                project.file(task.source.get())
+            }
+            task.targetRootOutputDir.convention(
+                project.layout.dir(project.provider {
+                    project.file(task.targetRoot.get())
+                })
+            )
+
             task.parserFile.convention {
-                project.file("$task.targetRoot/$task.pathToParser")
+                project.file("${task.targetRoot.get()}/${task.pathToParser.get()}")
             }
             task.psiDir.convention(
                 project.layout.dir(project.provider {
-                    project.file("${task.targetRoot}/${task.pathToPsiRoot}")
+                    project.file("${task.targetRoot.get()}/${task.pathToPsiRoot.get()}")
                 })
             )
 
             task.doFirst {
                 if (task.purgeOldFiles.get()) {
-                    val parserFile = project.file("${task.targetRoot}/${task.pathToParser}")
-                    val psiDir = project.file("${task.targetRoot}/${task.pathToPsiRoot}")
+                    val parserFile = project.file("${task.targetRoot.get()}/${task.pathToParser.get()}")
+                    val psiDir = project.file("${task.targetRoot.get()}/${task.pathToPsiRoot.get()}")
 
                     project.delete(parserFile)
                     project.delete(psiDir)
@@ -65,6 +82,9 @@ open class GrammarKitPlugin : Plugin<Project> {
             maven {
                 it.url = URI("https://www.jetbrains.com/intellij-repository/releases")
             }
+            maven {
+                it.url = URI("https://www.jitpack.io")
+            }
         }
 
         project.afterEvaluate {
@@ -72,25 +92,16 @@ open class GrammarKitPlugin : Plugin<Project> {
             val jflexRelease = extension.jflexRelease.get()
             val intellijRelease = extension.intellijRelease.orNull
 
-            if (intellijRelease == null) {
-                project.dependencies.add(
-                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
-                )
-                project.dependencies.add(
-                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
-                )
-                project.dependencies.add(
-                    JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME,
-                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
-                )
-                project.dependencies.add(
-                    GrammarKitConstants.BOM_CONFIGURATION_NAME,
-                    "dev.thiagosouto:plugin:1.3.4",
-                )
+            project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
 
+            if (intellijRelease == null) {
                 project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).apply {
+                    dependencies.addAll(listOf(
+                        "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
+                        "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
+                        "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
+                    ).map(project.dependencies::create))
+
                     exclude(mapOf(
                         "group" to "org.jetbrains.plugins",
                         "module" to "ant",
@@ -100,7 +111,11 @@ open class GrammarKitPlugin : Plugin<Project> {
                         "module" to "idea",
                     ))
                 }
-                project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).apply {
+                project.configurations.maybeCreate(GrammarKitConstants.BOM_CONFIGURATION_NAME).apply {
+                    dependencies.addAll(listOf(
+                        "dev.thiagosouto:plugin:1.3.4",
+                    ).map(project.dependencies::create))
+
                     exclude(mapOf(
                         "group" to "soutoPackage",
                         "module" to "test1",
@@ -113,7 +128,7 @@ open class GrammarKitPlugin : Plugin<Project> {
     }
 
     private fun configureGrammarKitClassPath(project: Project, grammarKitRelease: String, jflexRelease: String, intellijRelease: String) {
-        project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME) {
+        project.configurations.getByName(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME) {
             it.dependencies.addAll(listOf(
                 "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
                 "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",

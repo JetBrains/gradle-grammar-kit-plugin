@@ -6,6 +6,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.jetbrains.grammarkit.GrammarKitConstants
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
@@ -21,11 +23,19 @@ open class GenerateParserTask @Inject constructor(
     private val objectFactory: ObjectFactory,
 ) : ConventionTask() {
 
+    @Input
+    val source: Property<String> = objectFactory.property(String::class.java)
+
     @InputFile
-    val source: RegularFileProperty = objectFactory.fileProperty()
+    @Optional
+    val sourceFile: RegularFileProperty = objectFactory.fileProperty()
+
+    @Input
+    val targetRoot: Property<String> = objectFactory.property(String::class.java)
 
     @OutputDirectory
-    val targetRoot: DirectoryProperty = objectFactory.directoryProperty()
+    @Optional
+    val targetRootOutputDir: DirectoryProperty = objectFactory.directoryProperty()
 
     @Input
     val pathToParser: Property<String> = objectFactory.property(String::class.java)
@@ -63,6 +73,7 @@ open class GenerateParserTask @Inject constructor(
                     it.mainClass.set("org.intellij.grammar.Main")
                     it.args = getArgs()
                     it.classpath = getClasspath()
+                    it.errorOutput = os
                     it.standardOutput = os
                 }
             } catch (e: Exception) {
@@ -74,11 +85,11 @@ open class GenerateParserTask @Inject constructor(
         }
     }
 
-    private fun getArgs() = listOf(targetRoot, source).map { it.path    }
+    private fun getArgs() = listOf(targetRootOutputDir, sourceFile).map { it.path }
 
     private fun getClasspath(): FileCollection {
-        val grammarKitClassPathConfiguration = project.configurations.getByName("grammarKitClassPath")
-        val compileClasspathConfiguration = project.configurations.getByName("compileClasspath")
+        val grammarKitClassPathConfiguration = project.configurations.getByName(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
+        val compileClasspathConfiguration = project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
 
         return when {
             !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration
