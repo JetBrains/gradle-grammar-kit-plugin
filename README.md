@@ -15,9 +15,17 @@ NB: the plugin does not support two-pass generation. Therefore, it does not supp
 
 ### Loading and applying the plugin
 
+- Groovy – `build.gradle`
 ```groovy
 plugins {
     id "org.jetbrains.grammarkit" version "2021.1.3"
+}
+```
+
+- Kotlin DSL – `build.gradle.kts`
+```kotlin
+plugins {
+    id("org.jetbrains.grammarkit") version "2021.1.3"
 }
 ```
 
@@ -25,16 +33,31 @@ plugins {
 
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 
+- Groovy – `build.gradle`
 ```groovy
 grammarKit {
     // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
-    jflexRelease = '1.7.0-1'
+    jflexRelease = "1.7.0-1"
 
     // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
-    grammarKitRelease = '6452fde524'
+    grammarKitRelease = "6452fde524"
   
     // optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
-    intellijRelease = '203.7717.81'
+    intellijRelease = "203.7717.81"
+}
+```
+
+- Kotlin DSL – `build.gradle.kts`
+```kotlin
+plugins {
+  // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
+  jflexRelease.set("1.7.0-1")
+
+  // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
+  grammarKitRelease.set("6452fde524")
+
+  // optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
+  intellijRelease.set("203.7717.81")
 }
 ```
 
@@ -42,6 +65,7 @@ grammarKit {
 
 ### Generating lexer
 
+- Groovy – `build.gradle`
 ```groovy
 generateLexer {
     // source flex file
@@ -54,31 +78,72 @@ generateLexer {
     targetClass = "PerlLexer"
     
     // optional, path to the task-specific skeleton file. Default: none
-    skeleton = '/some/specific/skeleton'
+    skeleton = "/some/specific/skeleton"
     
     // if set, plugin will remove a lexer output file before generating new one. Default: false
     purgeOldFiles = true
 }
 ```
 
+- Kotlin DSL – `build.gradle.kts`
+```kotlin
+generateLexer {
+    // source flex file
+    source.set("grammar/Perl.flex")
+    
+    // target directory for lexer
+    targetDir.set("gen/com/perl5/lang/perl/lexer/")
+    
+    // target classname, target file will be targetDir/targetClass.java
+    targetClass.set("PerlLexer")
+    
+    // optional, path to the task-specific skeleton file. Default: none
+    skeleton.set("/some/specific/skeleton")
+    
+    // if set, plugin will remove a lexer output file before generating new one. Default: false
+    purgeOldFiles.set(true)
+}
+```
+
 ### Generating parser
 
+- Groovy – `build.gradle`
 ```groovy
 generateParser {
     // source bnf file
     source = "grammar/Perl5.bnf"
 
     // optional, task-specific root for the generated files. Default: none
-    targetRoot = 'gen'
+    targetRoot = "gen"
 
     // path to a parser file, relative to the targetRoot  
-    pathToParser = '/com/perl5/lang/perl/parser/PerlParserGenerated.java'
+    pathToParser = "/com/perl5/lang/perl/parser/PerlParserGenerated.java"
 
     // path to a directory with generated psi files, relative to the targetRoot 
-    pathToPsiRoot = '/com/perl5/lang/perl/psi'
+    pathToPsiRoot = "/com/perl5/lang/perl/psi"
 
     // if set, the plugin will remove a parser output file and psi output directory before generating new ones. Default: false
     purgeOldFiles = true
+}
+```
+
+- Kotlin DSL – `build.gradle.kts`
+```kotlin
+generateParser {
+    // source bnf file
+    source.set("grammar/Perl5.bnf")
+
+    // optional, task-specific root for the generated files. Default: none
+    targetRoot.set("gen")
+
+    // path to a parser file, relative to the targetRoot  
+    pathToParser.set("/com/perl5/lang/perl/parser/PerlParserGenerated.java")
+
+    // path to a directory with generated psi files, relative to the targetRoot 
+    pathToPsiRoot.set("/com/perl5/lang/perl/psi")
+
+    // if set, the plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+    purgeOldFiles.set(true)
 }
 ```
 
