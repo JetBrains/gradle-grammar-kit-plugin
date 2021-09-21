@@ -1,7 +1,7 @@
 [![official JetBrains project](https://jb.gg/badges/official.svg)][jb:confluence-on-gh]
-[![Twitter Follow](https://img.shields.io/twitter/follow/JBPlatform?style=flat)][jb:twitter]
+[![Twitter Follow](https://img.shields.io/twitter/follow/JBPlatform?style=flat-square&logo=twitter)][jb:twitter]
 [![Build](https://github.com/JetBrains/gradle-grammar-kit-plugin/workflows/Build/badge.svg)][gh:build]
-[![Slack](https://img.shields.io/badge/Slack-%23intellij--platform-blue)][jb:slack]
+[![Slack](https://img.shields.io/badge/Slack-%23intellij--platform-blue?style=flat-square&logo=Slack)][jb:slack]
 
 # gradle-grammarkit-plugin
 
@@ -11,22 +11,22 @@
 > ./gradlew wrapper --gradle-version=VERSION
 > ```
 
-This plugin simplifies the automation of generating lexers and parsers for IntelliJ plugins.
+This Gradle plugin automates generating lexers and parsers to support custom language development in IntelliJ plugins when using [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit).
 
-NB: the plugin does not support two-pass generation. Therefore, it does not support method mixins.
+NB: The plugin does not support two-pass generation. Therefore, it does not support method mixins.
 
 ## Usage
 
 ### Loading and applying the plugin
 
-- Groovy – `build.gradle`
+**Groovy** – `build.gradle`
 ```groovy
 plugins {
     id "org.jetbrains.grammarkit" version "..."
 }
 ```
 
-- Kotlin DSL – `build.gradle.kts`
+**Kotlin DSL** – `build.gradle.kts`
 ```kotlin
 plugins {
     id("org.jetbrains.grammarkit") version "..."
@@ -39,7 +39,7 @@ plugins {
 
 Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
 
-- Groovy – `build.gradle`
+**Groovy** – `build.gradle`
 ```groovy
 grammarKit {
   // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
@@ -53,7 +53,7 @@ grammarKit {
 }
 ```
 
-- Kotlin DSL – `build.gradle.kts`
+**Kotlin DSL** – `build.gradle.kts`
 ```kotlin
 plugins {
   // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
@@ -71,7 +71,7 @@ plugins {
 
 ### Generating lexer
 
-- Groovy – `build.gradle`
+**Groovy** – `build.gradle`
 ```groovy
 generateLexer {
     // source flex file
@@ -91,7 +91,7 @@ generateLexer {
 }
 ```
 
-- Kotlin DSL – `build.gradle.kts`
+**Kotlin DSL** – `build.gradle.kts`
 ```kotlin
 generateLexer {
     // source flex file
@@ -113,7 +113,7 @@ generateLexer {
 
 ### Generating parser
 
-- Groovy – `build.gradle`
+**Groovy** – `build.gradle`
 ```groovy
 generateParser {
     // source bnf file
@@ -133,7 +133,7 @@ generateParser {
 }
 ```
 
-- Kotlin DSL – `build.gradle.kts`
+**Kotlin DSL** – `build.gradle.kts`
 ```kotlin
 generateParser {
     // source bnf file
