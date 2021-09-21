@@ -13,7 +13,7 @@ abstract class GrammarKitPluginExtension @Inject constructor(
     /**
      * Tag or short commit hash of Grammar-Kit to use.
      * By default, uses the latest version available.
-     * See: https://github.com/JetBrains/Grammar-Kit/releases
+     * See: [https://github.com/JetBrains/Grammar-Kit/releases]
      */
     @Input
     @Optional
@@ -22,7 +22,7 @@ abstract class GrammarKitPluginExtension @Inject constructor(
     /**
      * Version of IntelliJ patched JFlex.
      * By default, uses the latest version available.
-     * See: https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/
+     * See: [https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/]
      */
     @Input
     @Optional
