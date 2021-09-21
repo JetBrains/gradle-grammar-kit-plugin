@@ -5,7 +5,11 @@
 
 # gradle-grammarkit-plugin
 
-**This project requires Gradle 6.6 or newer**
+> **Important:**
+> This project requires Gradle 6.6 or newer, however it is recommended to use the [latest Gradle available](https://gradle.org/releases/). Update it with:
+> ```bash
+> ./gradlew wrapper --gradle-version=VERSION
+> ```
 
 This plugin simplifies the automation of generating lexers and parsers for IntelliJ plugins.
 
@@ -18,16 +22,18 @@ NB: the plugin does not support two-pass generation. Therefore, it does not supp
 - Groovy – `build.gradle`
 ```groovy
 plugins {
-    id "org.jetbrains.grammarkit" version "2021.1.3"
+    id "org.jetbrains.grammarkit" version "..."
 }
 ```
 
 - Kotlin DSL – `build.gradle.kts`
 ```kotlin
 plugins {
-    id("org.jetbrains.grammarkit") version "2021.1.3"
+    id("org.jetbrains.grammarkit") version "..."
 }
 ```
+
+> **Note:** The latest version is: [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/org.jetbrains.grammarkit?color=green&label=Gradle%20Plugin%20Portal&logo=gradle)][gradle-plugin-page]
 
 ### Configuration
 
@@ -165,3 +171,4 @@ generateParser {
 [jb:confluence-on-gh]: https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub
 [jb:slack]: https://plugins.jetbrains.com/slack
 [jb:twitter]: https://twitter.com/JBPlatform
+[gradle-plugin-page]: https://plugins.gradle.org/plugin/org.jetbrains.grammarkit
