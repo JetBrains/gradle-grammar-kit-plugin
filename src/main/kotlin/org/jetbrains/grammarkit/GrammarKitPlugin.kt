@@ -63,7 +63,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             task.group = GrammarKitConstants.GROUP_NAME
 
             val requiredLibs = listOf(
-                "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
+                "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "java-api", "platform-api", "platform-impl",
                 "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
                 "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
                 // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
