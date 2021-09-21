@@ -1,12 +1,16 @@
 package org.jetbrains.grammarkit.tasks
 
+import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.Directory
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -18,11 +22,11 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
-import java.io.File
 import javax.inject.Inject
 
 open class GenerateLexerTask @Inject constructor(
-    private val objectFactory: ObjectFactory,
+    objectFactory: ObjectFactory,
+    private val projectLayout: ProjectLayout,
     private val execOperations: ExecOperations,
 ) : ConventionTask() {
 
@@ -30,22 +34,25 @@ open class GenerateLexerTask @Inject constructor(
     val targetDir: Property<String> = objectFactory.property(String::class.java)
 
     @OutputDirectory
-    @Optional
-    val targetOutputDir: DirectoryProperty = objectFactory.directoryProperty()
-
-    @OutputFile
-    @Optional
-    val targetFile: RegularFileProperty = objectFactory.fileProperty()
+    val targetOutputDir: Provider<Directory> = targetDir.map {
+        projectLayout.projectDirectory.dir(it)
+    }
 
     @Input
     val targetClass: Property<String> = objectFactory.property(String::class.java)
+
+    @OutputFile
+    val targetFile: Provider<RegularFile> = targetClass.map {
+        projectLayout.projectDirectory.file("${targetDir.get()}/$it.java")
+    }
 
     @Input
     val source: Property<String> = objectFactory.property(String::class.java)
 
     @InputFile
-    @Optional
-    val sourceFile: RegularFileProperty = objectFactory.fileProperty()
+    val sourceFile: Provider<RegularFile> = source.map {
+        projectLayout.projectDirectory.file(it)
+    }
 
     @InputFile
     @Optional
@@ -57,7 +64,7 @@ open class GenerateLexerTask @Inject constructor(
 
     @InputFiles
     @Classpath
-    val classpath: ListProperty<File> = objectFactory.listProperty(File::class.java)
+    val classpath: ConfigurableFileCollection = objectFactory.fileCollection()
 
     @TaskAction
     fun generateLexer() {
@@ -66,21 +73,19 @@ open class GenerateLexerTask @Inject constructor(
                 execOperations.javaexec {
                     it.mainClass.set("jflex.Main")
                     it.args = getArgs()
-                    it.classpath = objectFactory.fileCollection().from(classpath.get())
-                    it.errorOutput = os
-                    it.standardOutput = os
+                    it.classpath = classpath
+                    it.errorOutput = TeeOutputStream(System.out, os)
+                    it.standardOutput = TeeOutputStream(System.out, os)
                 }
             } catch (e: Exception) {
                 throw GradleException(os.toString().trim(), e)
             }
-
-            println(os.toString())
         }
     }
 
     private fun getArgs(): List<String> {
         val args = mutableListOf(
-            "-d", targetOutputDir.path,
+            "-d", targetOutputDir.get().asFile.canonicalPath,
         )
 
         if (skeleton.isPresent) {
@@ -88,7 +93,7 @@ open class GenerateLexerTask @Inject constructor(
             args.add(skeleton.path)
         }
 
-        args.add(sourceFile.path)
+        args.add(sourceFile.get().asFile.canonicalPath)
 
         return args
     }

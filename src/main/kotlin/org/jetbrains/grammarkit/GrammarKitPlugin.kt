@@ -33,19 +33,10 @@ open class GrammarKitPlugin : Plugin<Project> {
         project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) { task ->
             task.description = "Generates lexers for IntelliJ-based plugin"
             task.group = GrammarKitConstants.GROUP_NAME
+        }
 
-            task.sourceFile.convention {
-                project.file(task.source.get())
-            }
-            task.targetOutputDir.convention(
-                project.layout.dir(project.provider {
-                    project.file(task.targetDir.get())
-                })
-            )
-            task.targetFile.convention {
-                project.file("${task.targetDir.get()}/${task.targetClass.get()}.java")
-            }
-            task.classpath.convention(project.provider {
+        project.tasks.withType(GenerateLexerTask::class.java).configureEach { task ->
+            task.classpath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 }
@@ -53,7 +44,7 @@ open class GrammarKitPlugin : Plugin<Project> {
 
             task.doFirst {
                 if (task.purgeOldFiles.orNull == true) {
-                    task.targetFile.asFile.get().deleteRecursively()
+                    task.targetFile.get().asFile.deleteRecursively()
                 }
             }
         }
@@ -61,7 +52,9 @@ open class GrammarKitPlugin : Plugin<Project> {
         project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask::class.java) { task ->
             task.description = "Generates parsers for IntelliJ-based plugin"
             task.group = GrammarKitConstants.GROUP_NAME
+        }
 
+        project.tasks.withType(GenerateParserTask::class.java).configureEach { task ->
             val requiredLibs = listOf(
                 "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
                 "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
@@ -72,24 +65,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party"
             )
 
-            task.sourceFile.convention {
-                project.file(task.source.get())
-            }
-            task.targetRootOutputDir.convention(
-                project.layout.dir(project.provider {
-                    project.file(task.targetRoot.get())
-                })
-            )
-
-            task.parserFile.convention {
-                project.file("${task.targetRoot.get()}/${task.pathToParser.get()}")
-            }
-            task.psiDir.convention(
-                project.layout.dir(project.provider {
-                    project.file("${task.targetRoot.get()}/${task.pathToPsiRoot.get()}")
-                })
-            )
-            task.classpath.convention(project.provider {
+            task.classpath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
                         file.name.equals("$it.jar", true) || file.name.startsWith("$it-")
@@ -99,7 +75,7 @@ open class GrammarKitPlugin : Plugin<Project> {
 
             task.doFirst {
                 if (task.purgeOldFiles.orNull == true) {
-                    task.targetRootOutputDir.asFile.get().apply {
+                    task.targetRootOutputDir.get().asFile.apply {
                         resolve(task.pathToParser.get()).deleteRecursively()
                         resolve(task.pathToPsiRoot.get()).deleteRecursively()
                     }
