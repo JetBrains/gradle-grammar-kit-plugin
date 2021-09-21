@@ -37,7 +37,7 @@ plugins {
 
 ### Configuration
 
-Global configuration allows you to select necessary jFlex and Grammar-Kit versions.
+Global configuration allows you to select necessary JFlex and Grammar-Kit versions.
 
 **Groovy** – `build.gradle`
 ```groovy
