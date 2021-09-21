@@ -42,27 +42,27 @@ Global configuration allows you to select necessary jFlex and Grammar-Kit versio
 - Groovy – `build.gradle`
 ```groovy
 grammarKit {
-    // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
-    jflexRelease = "1.7.0-1"
+  // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
+  jflexRelease = "1.7.0-1"
 
-    // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
-    grammarKitRelease = "6452fde524"
+  // Release version of Grammar-Kit to use (see link below). By default, the latest available is used.
+  grammarKitRelease = "2021.1.1"
   
-    // optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
-    intellijRelease = "203.7717.81"
+  // Optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
+  intellijRelease = "203.7717.81"
 }
 ```
 
 - Kotlin DSL – `build.gradle.kts`
 ```kotlin
 plugins {
-  // version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
+  // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
   jflexRelease.set("1.7.0-1")
 
-  // tag or short commit hash of Grammar-Kit to use (see link below). Default is 2020.3.1
-  grammarKitRelease.set("6452fde524")
+  // Release version of Grammar-Kit to use (see link below). By default, the latest available is used.
+  grammarKitRelease.set("2021.1.1")
 
-  // optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
+  // Optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
   intellijRelease.set("203.7717.81")
 }
 ```

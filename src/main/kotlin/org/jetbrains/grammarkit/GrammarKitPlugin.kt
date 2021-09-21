@@ -87,15 +87,17 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
         }
 
-        val repositories = project.repositories.apply {
+        project.repositories.apply {
             maven {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
             }
             maven {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
-            maven {
-                it.url = URI("https://www.jitpack.io")
+            ivy {
+                it.url = URI("https://github.com/JetBrains/Grammar-Kit/releases/download")
+                it.patternLayout { layout -> layout.artifact("[revision]/grammar-kit-[revision].zip") }
+                it.metadataSources { metadata -> metadata.artifact() }
             }
         }
 
@@ -108,7 +110,6 @@ open class GrammarKitPlugin : Plugin<Project> {
                 compileOnlyConfiguration.apply {
                     dependencies.addAll(listOf(
                         "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
-                        "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                         "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                     ).map(project.dependencies::create))
 
@@ -134,8 +135,6 @@ open class GrammarKitPlugin : Plugin<Project> {
             } else {
                 configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
             }
-
-            project.repositories.removeAll(repositories)
         }
     }
 
