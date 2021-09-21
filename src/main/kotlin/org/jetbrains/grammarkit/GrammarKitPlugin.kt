@@ -1,5 +1,6 @@
 package org.jetbrains.grammarkit
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -8,7 +9,10 @@ import org.gradle.api.plugins.PluginInstantiationException
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
+import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
 
 @Suppress("unused")
 open class GrammarKitPlugin : Plugin<Project> {
@@ -21,8 +25,8 @@ open class GrammarKitPlugin : Plugin<Project> {
             GrammarKitPluginExtension::class.java,
         )
 
-        extension.grammarKitRelease.set(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
-        extension.jflexRelease.set(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
+        extension.grammarKitRelease.convention(GrammarKitConstants.LATEST_VERSION)
+        extension.jflexRelease.convention(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
 
         val grammarKitClassPathConfiguration =
             project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
@@ -83,7 +87,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
         }
 
-        project.repositories.apply {
+        val repositories = project.repositories.apply {
             maven {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
             }
@@ -96,7 +100,7 @@ open class GrammarKitPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            val grammarKitRelease = extension.grammarKitRelease.get()
+            val grammarKitRelease = getGrammarKitReleaseVersion(extension)
             val jflexRelease = extension.jflexRelease.get()
             val intellijRelease = extension.intellijRelease.orNull
 
@@ -130,8 +134,22 @@ open class GrammarKitPlugin : Plugin<Project> {
             } else {
                 configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
             }
+
+            project.repositories.removeAll(repositories)
         }
     }
+
+    private fun getGrammarKitReleaseVersion(extension: GrammarKitPluginExtension) =
+        extension.grammarKitRelease.get().takeIf { it != GrammarKitConstants.LATEST_VERSION } ?: run {
+            try {
+                return URL(GrammarKitConstants.GRAMMAR_KIT_LATEST_RELEASE_URL).openConnection().run {
+                    (this as HttpURLConnection).instanceFollowRedirects = false
+                    getHeaderField("Location").split('/').last()
+                }
+            } catch (e: IOException) {
+                throw GradleException("Cannot resolve the latest GrammarKit version")
+            }
+        }
 
     private fun configureGrammarKitClassPath(
         project: Project,
