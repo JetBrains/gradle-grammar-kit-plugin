@@ -146,7 +146,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                     getHeaderField("Location").split('/').last()
                 }
             } catch (e: IOException) {
-                throw GradleException("Cannot resolve the latest GrammarKit version")
+                throw GradleException("Cannot resolve the latest GrammarKit version", e)
             }
         }
 
