@@ -87,7 +87,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
         }
 
-        val repositories = project.repositories.apply {
+        project.repositories.apply {
             maven {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
             }
@@ -108,7 +108,6 @@ open class GrammarKitPlugin : Plugin<Project> {
                 compileOnlyConfiguration.apply {
                     dependencies.addAll(listOf(
                         "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
-                        "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                         "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                     ).map(project.dependencies::create))
 
@@ -134,8 +133,6 @@ open class GrammarKitPlugin : Plugin<Project> {
             } else {
                 configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
             }
-
-            project.repositories.removeAll(repositories)
         }
     }
 
