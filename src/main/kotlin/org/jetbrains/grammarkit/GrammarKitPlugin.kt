@@ -1,6 +1,5 @@
 package org.jetbrains.grammarkit
 
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -9,10 +8,7 @@ import org.gradle.api.plugins.PluginInstantiationException
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
-import java.io.IOException
-import java.net.HttpURLConnection
 import java.net.URI
-import java.net.URL
 
 @Suppress("unused")
 open class GrammarKitPlugin : Plugin<Project> {
@@ -25,7 +21,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             GrammarKitPluginExtension::class.java,
         )
 
-        extension.grammarKitRelease.convention(GrammarKitConstants.LATEST_VERSION)
+        extension.grammarKitRelease.convention(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
         extension.jflexRelease.convention(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
 
         val grammarKitClassPathConfiguration =
@@ -94,22 +90,17 @@ open class GrammarKitPlugin : Plugin<Project> {
             maven {
                 it.url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
-            ivy {
-                it.url = URI("https://github.com/JetBrains/Grammar-Kit/releases/download")
-                it.patternLayout { layout -> layout.artifact("[revision]/grammar-kit-[revision].zip") }
-                it.metadataSources { metadata -> metadata.artifact() }
-            }
         }
 
         project.afterEvaluate {
-            val grammarKitRelease = getGrammarKitReleaseVersion(extension)
+            val grammarKitRelease = extension.grammarKitRelease.get()
             val jflexRelease = extension.jflexRelease.get()
             val intellijRelease = extension.intellijRelease.orNull
 
             if (intellijRelease == null) {
                 compileOnlyConfiguration.apply {
                     dependencies.addAll(listOf(
-                        "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
+                        "org.jetbrains:grammar-kit:$grammarKitRelease",
                         "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                     ).map(project.dependencies::create))
 
@@ -138,18 +129,6 @@ open class GrammarKitPlugin : Plugin<Project> {
         }
     }
 
-    private fun getGrammarKitReleaseVersion(extension: GrammarKitPluginExtension) =
-        extension.grammarKitRelease.get().takeIf { it != GrammarKitConstants.LATEST_VERSION } ?: run {
-            try {
-                return URL(GrammarKitConstants.GRAMMAR_KIT_LATEST_RELEASE_URL).openConnection().run {
-                    (this as HttpURLConnection).instanceFollowRedirects = false
-                    getHeaderField("Location").split('/').last()
-                }
-            } catch (e: IOException) {
-                throw GradleException("Cannot resolve the latest GrammarKit version", e)
-            }
-        }
-
     private fun configureGrammarKitClassPath(
         project: Project,
         grammarKitClassPathConfiguration: Configuration,
@@ -159,7 +138,7 @@ open class GrammarKitPlugin : Plugin<Project> {
     ) {
         grammarKitClassPathConfiguration.apply {
             dependencies.addAll(listOf(
-                "com.github.JetBrains:Grammar-Kit:$grammarKitRelease",
+                "org.jetbrains:grammar-kit:$grammarKitRelease",
                 "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
                 "com.jetbrains.intellij.platform:indexing-impl:$intellijRelease",
                 "com.jetbrains.intellij.platform:analysis-impl:$intellijRelease",

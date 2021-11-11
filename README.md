@@ -59,8 +59,8 @@ plugins {
   // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
   jflexRelease.set("1.7.0-1")
 
-  // Release version, tag, or short commit hash of Grammar-Kit to use (see link below). By default, the latest available is used.
-  grammarKitRelease.set("2021.1.1")
+  // Release version, tag, or short commit hash of Grammar-Kit to use (see link below). Default is 2021.1.2
+  grammarKitRelease.set("2021.1.2")
 
   // Optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
   intellijRelease.set("203.7717.81")
