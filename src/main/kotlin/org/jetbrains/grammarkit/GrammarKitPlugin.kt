@@ -30,31 +30,31 @@ open class GrammarKitPlugin : Plugin<Project> {
         val compileOnlyConfiguration = project.configurations.getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
         val bomConfiguration = project.configurations.maybeCreate(GrammarKitConstants.BOM_CONFIGURATION_NAME)
 
-        project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) { task ->
-            task.description = "Generates lexers for IntelliJ-based plugin"
-            task.group = GrammarKitConstants.GROUP_NAME
+        project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) {
+            description = "Generates lexers for IntelliJ-based plugin"
+            group = GrammarKitConstants.GROUP_NAME
         }
 
-        project.tasks.withType(GenerateLexerTask::class.java).configureEach { task ->
-            task.classpath.setFrom(project.provider {
+        project.tasks.withType(GenerateLexerTask::class.java).configureEach {
+            classpath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 }
             })
 
-            task.doFirst {
-                if (task.purgeOldFiles.orNull == true) {
-                    task.targetFile.get().asFile.deleteRecursively()
+            doFirst {
+                if (purgeOldFiles.orNull == true) {
+                    targetFile.get().asFile.deleteRecursively()
                 }
             }
         }
 
-        project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask::class.java) { task ->
-            task.description = "Generates parsers for IntelliJ-based plugin"
-            task.group = GrammarKitConstants.GROUP_NAME
+        project.tasks.register(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, GenerateParserTask::class.java) {
+            description = "Generates parsers for IntelliJ-based plugin"
+            group = GrammarKitConstants.GROUP_NAME
         }
 
-        project.tasks.withType(GenerateParserTask::class.java).configureEach { task ->
+        project.tasks.withType(GenerateParserTask::class.java).configureEach {
             val requiredLibs = listOf(
                 "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
                 "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "Grammar-Kit",
@@ -65,7 +65,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party"
             )
 
-            task.classpath.setFrom(project.provider {
+            classpath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
                         file.name.equals("$it.jar", true) || file.name.startsWith("$it-")
@@ -73,11 +73,11 @@ open class GrammarKitPlugin : Plugin<Project> {
                 }
             })
 
-            task.doFirst {
-                if (task.purgeOldFiles.orNull == true) {
-                    task.targetRootOutputDir.get().asFile.apply {
-                        resolve(task.pathToParser.get()).deleteRecursively()
-                        resolve(task.pathToPsiRoot.get()).deleteRecursively()
+            doFirst {
+                if (purgeOldFiles.orNull == true) {
+                    targetRootOutputDir.get().asFile.apply {
+                        resolve(pathToParser.get()).deleteRecursively()
+                        resolve(pathToPsiRoot.get()).deleteRecursively()
                     }
                 }
             }
@@ -85,10 +85,10 @@ open class GrammarKitPlugin : Plugin<Project> {
 
         project.repositories.apply {
             maven {
-                it.url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
+                url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
             }
             maven {
-                it.url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
+                url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
         }
 

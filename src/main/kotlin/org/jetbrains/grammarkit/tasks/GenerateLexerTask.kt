@@ -71,11 +71,11 @@ open class GenerateLexerTask @Inject constructor(
         ByteArrayOutputStream().use { os ->
             try {
                 execOperations.javaexec {
-                    it.mainClass.set("jflex.Main")
-                    it.args = getArgs()
-                    it.classpath = classpath
-                    it.errorOutput = TeeOutputStream(System.out, os)
-                    it.standardOutput = TeeOutputStream(System.out, os)
+                    mainClass.set("jflex.Main")
+                    args = getArguments()
+                    classpath = this@GenerateLexerTask.classpath
+                    errorOutput = TeeOutputStream(System.out, os)
+                    standardOutput = TeeOutputStream(System.out, os)
                 }
             } catch (e: Exception) {
                 throw GradleException(os.toString().trim(), e)
@@ -83,7 +83,7 @@ open class GenerateLexerTask @Inject constructor(
         }
     }
 
-    private fun getArgs(): List<String> {
+    private fun getArguments(): List<String> {
         val args = mutableListOf(
             "-d", targetOutputDir.get().asFile.canonicalPath,
         )

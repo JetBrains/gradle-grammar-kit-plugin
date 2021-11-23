@@ -4,8 +4,8 @@ fun properties(key: String) = project.findProperty(key)?.toString()
 
 plugins {
     kotlin("jvm") version "1.6.0"
-    id("java-gradle-plugin")
-    id("maven-publish")
+    `kotlin-dsl`
+    `maven-publish`
     id("com.gradle.plugin-publish") version "0.18.0"
     id("org.jetbrains.changelog") version "1.3.1"
 }

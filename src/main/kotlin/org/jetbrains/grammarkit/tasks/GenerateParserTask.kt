@@ -74,11 +74,11 @@ open class GenerateParserTask @Inject constructor(
             try {
                 println("classpath='${classpath.files}'")
                 execOperations.javaexec {
-                    it.mainClass.set("org.intellij.grammar.Main")
-                    it.args = getArgs()
-                    it.classpath = classpath
-                    it.errorOutput = TeeOutputStream(System.out, os)
-                    it.standardOutput = TeeOutputStream(System.out, os)
+                    mainClass.set("org.intellij.grammar.Main")
+                    args = getArguments()
+                    classpath = this@GenerateParserTask.classpath
+                    errorOutput = TeeOutputStream(System.out, os)
+                    standardOutput = TeeOutputStream(System.out, os)
                 }
             } catch (e: Exception) {
                 throw GradleException(os.toString().trim(), e)
@@ -86,5 +86,5 @@ open class GenerateParserTask @Inject constructor(
         }
     }
 
-    private fun getArgs() = listOf(targetRootOutputDir, sourceFile).map { it.get().asFile.canonicalPath }
+    private fun getArguments() = listOf(targetRootOutputDir, sourceFile).map { it.get().asFile.canonicalPath }
 }
