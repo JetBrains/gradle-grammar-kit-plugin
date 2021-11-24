@@ -27,6 +27,11 @@ version = properties("version") ?: ""
 group = properties("group") ?: ""
 description = "This plugin allows you to generate lexers using JetBrains patched JFLex and parsers using Grammar-Kit."
 
+changelog {
+    headerParserRegex.set("""(\d+(\.\d+)+)""")
+    groups.set(emptyList())
+}
+
 gradlePlugin {
     plugins.create("grammarKitPlugin") {
         id = "org.jetbrains.grammarkit"
