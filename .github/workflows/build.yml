@@ -43,6 +43,9 @@ jobs:
           - windows-latest
           - ubuntu-latest
           - macos-latest
+    outputs:
+      version: ${{ steps.properties.outputs.version }}
+      changelog: ${{ steps.properties.outputs.changelog }}
 
     steps:
 
@@ -65,6 +68,21 @@ jobs:
         with:
           name: test-results-${{ matrix.gradleVersion }}-${{ runner.os }}
           path: ${{ github.workspace }}/build/reports/tests/test/
+
+      # Set environment variables
+      - name: Export Properties
+        id: properties
+        shell: bash
+        run: |
+          PROPERTIES="$(./gradlew properties --console=plain -q)"
+          VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
+          CHANGELOG="$(./gradlew getChangelog --unreleased --no-header --console=plain -q)"
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=changelog::$CHANGELOG"
 
   # Prepare a draft release for GitHub Releases page for the manual verification
   # If accepted and published, release workflow would be triggered
@@ -93,10 +111,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v${{ needs.build.outputs.version }} \
+          gh release create v${{ needs.test.outputs.version }} \
             --draft \
-            --title "v${{ needs.build.outputs.version }}" \
+            --title "v${{ needs.test.outputs.version }}" \
             --notes "$(cat << 'EOM'
-          ${{ needs.build.outputs.changelog }}
+          ${{ needs.test.outputs.changelog }}
           EOM
           )"
