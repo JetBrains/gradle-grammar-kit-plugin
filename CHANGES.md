@@ -1,2 +1,0 @@
-- 2018.3.1
-  - classpath for generating tasks is more selective and does not exceed windows limit of 32 kilobytes
