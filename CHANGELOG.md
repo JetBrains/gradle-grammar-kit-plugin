@@ -1,6 +1,8 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
+
+## [2021.2]
 - Default Grammar-Kit updated to 2021.1.2
 - Introducing Gradle configuration cache, lazy properties
 - Code refactoring, migration to Kotlin, tests
