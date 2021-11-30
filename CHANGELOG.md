@@ -1,7 +1,9 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
-- Hotfix for an issue when `compileClasspath` or `compileOnly` configurations are missing in the project.
+- Fixed resolving `requiredLibs` for the parser classpath
+- Add `app.jar` to the classpath
+- Fix for an issue when `compileClasspath` or `compileOnly` configurations are missing in the project.
 
 ## [2021.2]
 - Default Grammar-Kit updated to 2021.1.2
