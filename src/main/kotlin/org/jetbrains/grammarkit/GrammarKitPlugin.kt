@@ -68,7 +68,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             classpath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
-                        file.name.equals("$it.jar", true) || file.name.startsWith("$it-")
+                        file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
                     }
                 }
             })
