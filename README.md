@@ -55,7 +55,7 @@ grammarKit {
 
 **Kotlin DSL** – `build.gradle.kts`
 ```kotlin
-plugins {
+grammarKit {
   // Version of IntelliJ patched JFlex (see the link below), Default is 1.7.0-1 
   jflexRelease.set("1.7.0-1")
 
