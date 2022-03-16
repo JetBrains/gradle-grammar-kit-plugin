@@ -28,7 +28,6 @@ open class GrammarKitPlugin : Plugin<Project> {
             project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
         val compileClasspathConfiguration = project.configurations.maybeCreate(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
         val compileOnlyConfiguration = project.configurations.maybeCreate(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
-        val bomConfiguration = project.configurations.maybeCreate(GrammarKitConstants.BOM_CONFIGURATION_NAME)
 
         project.tasks.register(GrammarKitConstants.GENERATE_LEXER_TASK_NAME, GenerateLexerTask::class.java) {
             description = "Generates lexers for IntelliJ-based plugin"
@@ -111,16 +110,6 @@ open class GrammarKitPlugin : Plugin<Project> {
                     exclude(mapOf(
                         "group" to "org.jetbrains.plugins",
                         "module" to "idea",
-                    ))
-                }
-                bomConfiguration.apply {
-                    dependencies.addAll(listOf(
-                        "dev.thiagosouto:plugin:1.3.4",
-                    ).map(project.dependencies::create))
-
-                    exclude(mapOf(
-                        "group" to "soutoPackage",
-                        "module" to "test1",
                     ))
                 }
             } else {

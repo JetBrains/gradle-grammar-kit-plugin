@@ -7,5 +7,4 @@ object GrammarKitConstants {
     const val GRAMMAR_KIT_DEFAULT_VERSION = "2021.1.2"
     const val JFLEX_DEFAULT_VERSION = "1.7.0-1"
     const val GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME = "grammarKitClassPath"
-    const val BOM_CONFIGURATION_NAME = "bomConfiguration"
 }

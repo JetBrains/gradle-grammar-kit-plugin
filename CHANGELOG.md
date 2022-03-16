@@ -1,9 +1,9 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
-- 
+- Remove redundant `bomConfiguration`
 
-## [2021.2]
+## [2021.2.1]
 - Fixed resolving `requiredLibs` for the parser classpath
 - Add `app.jar` to the classpath
 - Fix for an issue when `compileClasspath` or `compileOnly` configurations are missing in the project.
