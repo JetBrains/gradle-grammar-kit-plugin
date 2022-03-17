@@ -19,6 +19,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
+import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
@@ -86,5 +87,5 @@ open class GenerateParserTask @Inject constructor(
         }
     }
 
-    private fun getArguments() = listOf(targetRootOutputDir, sourceFile).map { it.get().asFile.canonicalPath }
+    private fun getArguments() = listOf(targetRootOutputDir, sourceFile).map { it.path }
 }

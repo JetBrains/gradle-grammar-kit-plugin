@@ -85,7 +85,7 @@ open class GenerateLexerTask @Inject constructor(
 
     private fun getArguments(): List<String> {
         val args = mutableListOf(
-            "-d", targetOutputDir.get().asFile.canonicalPath,
+            "-d", targetOutputDir.path,
         )
 
         if (skeleton.isPresent) {
@@ -93,7 +93,7 @@ open class GenerateLexerTask @Inject constructor(
             args.add(skeleton.path)
         }
 
-        args.add(sourceFile.get().asFile.canonicalPath)
+        args.add(sourceFile.path)
 
         return args
     }
