@@ -56,7 +56,7 @@ open class GrammarKitPlugin : Plugin<Project> {
         project.tasks.withType(GenerateParserTask::class.java).configureEach {
             val requiredLibs = listOf(
                 "app", "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
-                "util", "annotations", "picocontainer", "extensions", "idea", "openapi", "grammar-kit",
+                "util", "util_rt", "annotations", "picocontainer", "extensions", "idea", "openapi", "grammar-kit",
                 "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
                 // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
                 // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
