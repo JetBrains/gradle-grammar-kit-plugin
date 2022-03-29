@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 - Remove redundant `bomConfiguration`
+- Add `util_rt.jar` into GrammarKit call classpath
 
 ## [2021.2.1]
 - Fixed resolving `requiredLibs` for the parser classpath
