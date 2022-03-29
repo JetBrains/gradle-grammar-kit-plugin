@@ -1,6 +1,8 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
+
+## [2021.2.2]
 - Remove redundant `bomConfiguration`
 - Add `util_rt.jar` into GrammarKit call classpath
 
