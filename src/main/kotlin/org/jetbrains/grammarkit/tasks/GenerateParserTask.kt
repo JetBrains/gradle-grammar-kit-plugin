@@ -73,7 +73,6 @@ open class GenerateParserTask @Inject constructor(
     fun generateParser() {
         ByteArrayOutputStream().use { os ->
             try {
-                println("classpath='${classpath.files}'")
                 execOperations.javaexec {
                     mainClass.set("org.intellij.grammar.Main")
                     args = getArguments()
