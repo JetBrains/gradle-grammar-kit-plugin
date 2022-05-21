@@ -46,7 +46,7 @@ grammarKit {
   jflexRelease = "1.7.0-1"
 
   // Release version, tag, or short commit hash of Grammar-Kit to use (see link below). By default, the latest available is used.
-  grammarKitRelease = "2021.1.1"
+  grammarKitRelease = "2021.1.2"
   
   // Optionally provide an IntelliJ version to build the classpath for GenerateParser/GenerateLexer tasks
   intellijRelease = "203.7717.81"
@@ -84,7 +84,7 @@ generateLexer {
     targetClass = "PerlLexer"
     
     // optional, path to the task-specific skeleton file. Default: none
-    skeleton = "/some/specific/skeleton"
+    skeleton = new File("/some/specific/skeleton")
     
     // if set, plugin will remove a lexer output file before generating new one. Default: false
     purgeOldFiles = true
@@ -104,7 +104,7 @@ generateLexer {
     targetClass.set("PerlLexer")
     
     // optional, path to the task-specific skeleton file. Default: none
-    skeleton.set("/some/specific/skeleton")
+    skeleton.set(File("/some/specific/skeleton"))
     
     // if set, plugin will remove a lexer output file before generating new one. Default: false
     purgeOldFiles.set(true)
