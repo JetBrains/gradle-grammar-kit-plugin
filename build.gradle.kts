@@ -1,5 +1,4 @@
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun properties(key: String) = project.findProperty(key)?.toString()
 
@@ -12,41 +11,33 @@ plugins {
     id("org.jetbrains.dokka") version "1.6.21"
 }
 
+description = properties("description")
+group = properties("group")!!
+version = properties("version")!!
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(gradleApi())
-    implementation(localGroovy())
-
-    testImplementation(gradleTestKit())
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
 }
 
-version = properties("version") ?: ""
-group = properties("group") ?: ""
-description = "This plugin allows you to generate lexers using JetBrains patched JFLex and parsers using Grammar-Kit."
-
-changelog {
-    headerParserRegex.set("""(\d+(\.\d+)+)""")
-    groups.set(emptyList())
-}
-
 gradlePlugin {
     plugins.create("grammarKitPlugin") {
-        id = "org.jetbrains.grammarkit"
-        displayName = "Gradle Grammar-Kit Plugin"
-        implementationClass = "org.jetbrains.grammarkit.GrammarKitPlugin"
+        id = properties("pluginId")
+        implementationClass = properties("pluginImplementationClass")
+        displayName = properties("pluginDisplayName")
+        description = properties("pluginDescription")
     }
 }
 
 pluginBundle {
-    website = "https://github.com/JetBrains/gradle-grammar-kit-plugin"
-    vcsUrl = "https://github.com/JetBrains/gradle-grammar-kit-plugin"
-    description = "Plugin for generating lexers and parsers for IntelliJ plugins"
-    tags = listOf("intellij", "jetbrains", "idea", "Grammar-Kit", "JFlex")
+    website = properties("website")
+    vcsUrl = properties("vcsUrl")
+    description = properties("description")
+    tags = properties("tags")?.split(',')
 }
 
 val dokkaHtml by tasks.getting(DokkaTask::class)
@@ -66,31 +57,32 @@ artifacts {
     archives(sourcesJar)
 }
 
+changelog {
+    headerParserRegex.set("""(\d+(\.\d+)+)""")
+    groups.set(emptyList())
+}
+
+kotlin {
+    jvmToolchain {
+        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_1_8.toString()
+    test {
+        val testGradleHomePath = "$buildDir/testGradleHome"
+        doFirst {
+            File(testGradleHomePath).mkdir()
         }
+        systemProperties["test.gradle.home"] = testGradleHomePath
+        systemProperties["test.gradle.default"] = properties("gradleVersion")
+        systemProperties["test.gradle.version"] = properties("testGradleVersion")
+        systemProperties["test.gradle.arguments"] = properties("testGradleArguments")
+        outputs.dir(testGradleHomePath)
     }
 
     wrapper {
         gradleVersion = properties("gradleVersion")
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
     }
-
-    test {
-        configureTests(this)
-    }
-}
-
-fun configureTests(testTask: Test) {
-    val testGradleHomePath = "$buildDir/testGradleHome"
-    testTask.doFirst {
-        File(testGradleHomePath).mkdir()
-    }
-    testTask.systemProperties["test.gradle.home"] = testGradleHomePath
-    testTask.systemProperties["test.gradle.default"] = properties("gradleVersion")
-    testTask.systemProperties["test.gradle.version"] = properties("testGradleVersion")
-    testTask.systemProperties["test.gradle.arguments"] = properties("testGradleArguments")
-    testTask.outputs.dir(testGradleHomePath)
 }
