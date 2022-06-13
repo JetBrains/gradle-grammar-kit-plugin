@@ -55,7 +55,6 @@ jobs:
         with:
           distribution: zulu
           java-version: 11
-          cache: gradle
 
       - name: Run Linters and Test
         run: ./gradlew check -PtestGradleVersion="${{ matrix.gradleVersion }}"
@@ -86,7 +85,6 @@ jobs:
         with:
           distribution: zulu
           java-version: 11
-          cache: gradle
 
       # Set environment variables
       - name: Export Properties
