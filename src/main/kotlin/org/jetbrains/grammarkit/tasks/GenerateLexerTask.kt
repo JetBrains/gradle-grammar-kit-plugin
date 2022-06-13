@@ -2,15 +2,9 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.Directory
 import org.gradle.api.file.ProjectLayout
-import org.gradle.api.file.RegularFile
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -19,52 +13,89 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.property
 import org.gradle.process.ExecOperations
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
+/**
+ * The `generateLexer` task generates a lexer for the given grammar.
+ * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
+ */
 open class GenerateLexerTask @Inject constructor(
     objectFactory: ObjectFactory,
     private val projectLayout: ProjectLayout,
     private val execOperations: ExecOperations,
 ) : ConventionTask() {
 
+    /**
+     * Required.
+     * The path to the target directory for the generated lexer.
+     */
     @Input
-    val targetDir: Property<String> = objectFactory.property(String::class.java)
+    val targetDir = objectFactory.property<String>()
 
+    /**
+     * The output directory computed from the [targetDir] property.
+     */
     @OutputDirectory
-    val targetOutputDir: Provider<Directory> = targetDir.map {
+    val targetOutputDir = targetDir.map {
         projectLayout.projectDirectory.dir(it)
     }
 
+    /**
+     * Required.
+     * The Java file name where the generated lexer will be written.
+     */
     @Input
-    val targetClass: Property<String> = objectFactory.property(String::class.java)
+    val targetClass = objectFactory.property<String>()
 
+    /**
+     * The output file computed from the [targetDir] and [targetClass] properties.
+     */
     @OutputFile
-    val targetFile: Provider<RegularFile> = targetClass.map {
+    val targetFile = targetClass.map {
         projectLayout.projectDirectory.file("${targetDir.get()}/$it.java")
     }
 
+    /**
+     * Required.
+     * The source Flex file to generate the lexer from.
+     */
     @Input
-    val source: Property<String> = objectFactory.property(String::class.java)
+    val source = objectFactory.property<String>()
 
+    /**
+     * Source file computed from [source] path.
+     */
     @InputFile
-    val sourceFile: Provider<RegularFile> = source.map {
+    val sourceFile = source.map {
         projectLayout.projectDirectory.file(it)
     }
 
+    /**
+     * An optional path to the skeleton file to use for the generated lexer.
+     * The path will be provided as `--skel` option.
+     * By default, it uses the [`idea-flex.skeleton`](https://raw.github.com/JetBrains/intellij-community/master/tools/lexer/idea-flex.skeleton) skeleton file.
+     */
     @InputFile
     @Optional
-    val skeleton: RegularFileProperty = objectFactory.fileProperty()
+    val skeleton = objectFactory.fileProperty()
 
+    /**
+     * Purge old files from the target directory before generating the lexer.
+     */
     @Input
     @Optional
-    val purgeOldFiles: Property<Boolean> = objectFactory.property(Boolean::class.java)
+    val purgeOldFiles = objectFactory.property<Boolean>()
 
+    /**
+     * The classpath with JFlex to use for the generation.
+     */
     @InputFiles
     @Classpath
-    val classpath: ConfigurableFileCollection = objectFactory.fileCollection()
+    val classpath = objectFactory.fileCollection()
 
     @TaskAction
     fun generateLexer() {

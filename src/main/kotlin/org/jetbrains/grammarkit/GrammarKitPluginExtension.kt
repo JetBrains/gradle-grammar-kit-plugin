@@ -1,9 +1,9 @@
 package org.jetbrains.grammarkit
 
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
 
 abstract class GrammarKitPluginExtension @Inject constructor(
@@ -11,28 +11,33 @@ abstract class GrammarKitPluginExtension @Inject constructor(
 ) {
 
     /**
-     * Tag or short commit hash of Grammar-Kit to use.
-     * By default, uses the latest version available.
-     * See: [https://github.com/JetBrains/Grammar-Kit/releases]
+     * The release version of the [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit) to use.
+     *
+     * Default value: `2021.1.2`
      */
     @Input
     @Optional
-    val grammarKitRelease: Property<String> = objectFactory.property(String::class.java)
+    val grammarKitRelease = objectFactory.property<String>()
 
     /**
-     * Version of IntelliJ patched JFlex.
-     * By default, uses the latest version available.
-     * See: [https://packages.jetbrains.team/maven/p/ij/intellij-dependencies/org/jetbrains/intellij/deps/jflex/jflex/]
+     * The version of the IntelliJ-patched JFlex, a [fork of JFlex](https://github.com/JetBrains/intellij-deps-jflex)
+     * lexer generator for IntelliJ Platform API.
+     *
+     * Default value: `1.7.0-1`
      */
     @Input
     @Optional
-    val jflexRelease: Property<String> = objectFactory.property(String::class.java)
+    val jflexRelease = objectFactory.property<String>()
 
     /**
-     * Version of the IntelliJ to build the classpath for GenerateParser/GenerateLexer tasks.
+     * Version of the IntelliJ to build the classpath for [org.jetbrains.grammarkit.tasks.GenerateParserTask]
+     * and [org.jetbrains.grammarkit.tasks.GenerateLexerTask] tasks.
+     * If provided, [grammarKitRelease] and [jflexRelease] properties are ignored as both dependencies will be provided
+     * from the given IntelliJ IDEA release.
+     *
+     * Default value: `null`
      */
     @Input
     @Optional
-    val intellijRelease: Property<String> = objectFactory.property(String::class.java)
+    val intellijRelease = objectFactory.property<String>()
 }
-
