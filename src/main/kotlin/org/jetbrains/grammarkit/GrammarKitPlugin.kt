@@ -155,8 +155,8 @@ open class GrammarKitPlugin : Plugin<Project> {
     }
 
     private fun checkGradleVersion(project: Project) {
-        if (Version.parse(project.gradle.gradleVersion) < Version.parse("6.6")) {
-            throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle 6.6 and higher")
+        if (Version.parse(project.gradle.gradleVersion) < Version.parse("6.7.1")) {
+            throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle 6.7.1 and higher")
         }
     }
 }
