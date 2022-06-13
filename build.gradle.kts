@@ -3,7 +3,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 fun properties(key: String) = project.findProperty(key)?.toString()
 
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
     `kotlin-dsl`
     `maven-publish`
     id("com.gradle.plugin-publish") version "1.0.0-rc-2"
@@ -64,7 +64,7 @@ changelog {
 
 kotlin {
     jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
