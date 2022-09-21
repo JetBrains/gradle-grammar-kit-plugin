@@ -5,17 +5,17 @@ import org.jetbrains.dokka.gradle.DokkaTask
 fun properties(key: String) = project.findProperty(key)?.toString()
 
 plugins {
-    kotlin("jvm") version "1.7.10"
     `kotlin-dsl`
     `maven-publish`
+    kotlin("jvm") version "1.7.10"
     id("com.gradle.plugin-publish") version "1.0.0"
     id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.dokka") version "1.7.10"
 }
 
-description = properties("description")
-group = properties("group")!!
 version = properties("version")!!
+group = properties("group")!!
+description = properties("description")
 
 repositories {
     mavenCentral()
@@ -24,6 +24,12 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 gradlePlugin {
@@ -62,12 +68,6 @@ artifacts {
 changelog {
     headerParserRegex.set("""(\d+(\.\d+)+)""")
     groups.set(emptyList())
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
 }
 
 tasks {
