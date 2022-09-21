@@ -30,7 +30,7 @@ jobs:
         uses: JetBrains/qodana-action@v2022.2.1
 
   test:
-    name: Test
+    name: Gradle ${{ matrix.gradleVersion }} @ ${{ matrix.os }}
     needs: gradleValidation
     runs-on: ${{ matrix.os }}
     strategy:
@@ -39,13 +39,23 @@ jobs:
         gradleVersion:
           - 6.7.1
           - 6.9.2
-          - 7.4.2
+          - 7.5.1
         os:
           - windows-latest
           - ubuntu-latest
           - macos-latest
+        include:
+          - os: ubuntu-latest
+            script: |
+              sudo rm -rf /usr/share/dotnet
+              sudo rm -rf /usr/local/lib/android
+              sudo rm -rf /opt/ghc
 
     steps:
+
+      - name: Run OS-dedicated script
+        if: ${{ matrix.script }}
+        run: ${{ matrix.script }}
 
       - name: Fetch Sources
         uses: actions/checkout@v3
@@ -56,8 +66,8 @@ jobs:
           distribution: zulu
           java-version: 11
 
-      - name: Run Linters and Test
-        run: ./gradlew check -PtestGradleVersion="${{ matrix.gradleVersion }}"
+      - name: Run Tests
+        run: ./gradlew check -PtestGradleVersion="${{ matrix.gradleVersion }}" ${{ runner.os == 'Windows' && '-PtestGradleUserHome="C:\\testGradleHome"' || '' }}
 
       - name: Collect Test Results
         if: ${{ failure() }}
@@ -105,7 +115,7 @@ jobs:
           echo "::set-output name=changelog::$CHANGELOG"
 
       - name: Build Plugin
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       # Store already-built plugin as an artifact for downloading
       - name: Upload artifact
