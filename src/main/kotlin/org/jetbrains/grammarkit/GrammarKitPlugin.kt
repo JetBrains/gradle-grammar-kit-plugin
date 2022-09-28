@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.PluginInstantiationException
+import org.jetbrains.grammarkit.GrammarKitConstants.MINIMAL_SUPPORTED_GRADLE_VERSION
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
@@ -157,8 +158,8 @@ open class GrammarKitPlugin : Plugin<Project> {
     }
 
     private fun checkGradleVersion(project: Project) {
-        if (Version.parse(project.gradle.gradleVersion) < Version.parse("6.7.1")) {
-            throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle 6.7.1 and higher")
+        if (Version.parse(project.gradle.gradleVersion) < Version.parse(MINIMAL_SUPPORTED_GRADLE_VERSION)) {
+            throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle $MINIMAL_SUPPORTED_GRADLE_VERSION and higher")
         }
     }
 }
