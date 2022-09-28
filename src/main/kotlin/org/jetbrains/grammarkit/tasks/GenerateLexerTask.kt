@@ -3,19 +3,13 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.file.ProjectLayout
-import org.gradle.api.internal.ConventionTask
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.tasks.Classpath
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.property
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.*
 import org.gradle.process.ExecOperations
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
@@ -25,79 +19,71 @@ import javax.inject.Inject
  * The `generateLexer` task generates a lexer for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
-open class GenerateLexerTask @Inject constructor(
-    objectFactory: ObjectFactory,
-    private val projectLayout: ProjectLayout,
+abstract class GenerateLexerTask @Inject constructor(
     private val execOperations: ExecOperations,
-) : ConventionTask() {
+) : DefaultTask() {
 
     /**
      * Required.
      * The path to the target directory for the generated lexer.
      */
-    @Input
-    val targetDir = objectFactory.property<String>()
+    @get:Input
+    abstract val targetDir: Property<String>
 
     /**
      * The output directory computed from the [targetDir] property.
      */
-    @OutputDirectory
-    val targetOutputDir = targetDir.map {
-        projectLayout.projectDirectory.dir(it)
-    }
+    @get:OutputDirectory
+    abstract val targetOutputDir: DirectoryProperty
 
     /**
      * Required.
      * The Java file name where the generated lexer will be written.
      */
-    @Input
-    val targetClass = objectFactory.property<String>()
+    @get:Input
+    abstract val targetClass: Property<String>
 
     /**
      * The output file computed from the [targetDir] and [targetClass] properties.
      */
-    @OutputFile
-    val targetFile = targetClass.map {
-        projectLayout.projectDirectory.file("${targetDir.get()}/$it.java")
-    }
+    @get:OutputFile
+    abstract val targetFile: RegularFileProperty
 
     /**
      * Required.
      * The source Flex file to generate the lexer from.
      */
-    @Input
-    val source = objectFactory.property<String>()
+    @get:Input
+    abstract val source: Property<String>
 
     /**
      * Source file computed from [source] path.
      */
-    @InputFile
-    val sourceFile = source.map {
-        projectLayout.projectDirectory.file(it)
-    }
+    @get:InputFile
+    abstract val sourceFile: RegularFileProperty
 
     /**
      * An optional path to the skeleton file to use for the generated lexer.
      * The path will be provided as `--skel` option.
      * By default, it uses the [`idea-flex.skeleton`](https://raw.github.com/JetBrains/intellij-community/master/tools/lexer/idea-flex.skeleton) skeleton file.
      */
-    @InputFile
-    @Optional
-    val skeleton = objectFactory.fileProperty()
+    @get:InputFile
+    @get:Optional
+    abstract val skeleton: RegularFileProperty
 
     /**
      * Purge old files from the target directory before generating the lexer.
      */
-    @Input
-    @Optional
-    val purgeOldFiles = objectFactory.property<Boolean>()
+    @get:Input
+    @get:Optional
+    abstract val purgeOldFiles: Property<Boolean>
 
     /**
      * The classpath with JFlex to use for the generation.
      */
-    @InputFiles
-    @Classpath
-    val classpath = objectFactory.fileCollection()
+    @get:InputFiles
+    @get:Classpath
+    abstract val classpath: ConfigurableFileCollection
 
     @TaskAction
     fun generateLexer() {
