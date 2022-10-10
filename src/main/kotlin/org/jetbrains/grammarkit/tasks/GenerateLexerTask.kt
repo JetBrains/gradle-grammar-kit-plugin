@@ -3,25 +3,24 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.gradle.process.ExecOperations
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
 
 /**
  * The `generateLexer` task generates a lexer for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
-abstract class GenerateLexerTask @Inject constructor(
-    private val execOperations: ExecOperations,
-) : DefaultTask() {
+abstract class GenerateLexerTask : JavaExec() {
+
+    init {
+        mainClass.set("jflex.Main")
+    }
 
     /**
      * Required.
@@ -83,19 +82,17 @@ abstract class GenerateLexerTask @Inject constructor(
      */
     @get:InputFiles
     @get:Classpath
-    abstract val classpath: ConfigurableFileCollection
+    abstract val jFlexClasspath: ConfigurableFileCollection
 
     @TaskAction
-    fun generateLexer() {
+    override fun exec() {
         ByteArrayOutputStream().use { os ->
             try {
-                execOperations.javaexec {
-                    mainClass.set("jflex.Main")
-                    args = getArguments()
-                    classpath = this@GenerateLexerTask.classpath
-                    errorOutput = TeeOutputStream(System.out, os)
-                    standardOutput = TeeOutputStream(System.out, os)
-                }
+                args = getArguments()
+                classpath = this@GenerateLexerTask.jFlexClasspath
+                errorOutput = TeeOutputStream(System.out, os)
+                standardOutput = TeeOutputStream(System.out, os)
+                super.exec()
             } catch (e: Exception) {
                 throw GradleException(os.toString().trim(), e)
             }
