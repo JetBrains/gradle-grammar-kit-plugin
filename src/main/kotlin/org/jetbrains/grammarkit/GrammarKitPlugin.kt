@@ -46,7 +46,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             sourceFile.convention(source.map {
                 project.layout.projectDirectory.file(it)
             })
-            classpath.setFrom(project.provider {
+            jFlexClasspath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 }
@@ -88,7 +88,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party",
             )
 
-            classpath.setFrom(project.provider {
+            grammarKitClasspath.setFrom(project.provider {
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
                         file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)

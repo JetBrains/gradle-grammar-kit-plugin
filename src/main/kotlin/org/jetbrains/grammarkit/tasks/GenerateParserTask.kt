@@ -19,9 +19,11 @@ import javax.inject.Inject
  * The `generateParser` task generates a parser for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
-abstract class GenerateParserTask @Inject constructor(
-    private val execOperations: ExecOperations,
-) : DefaultTask() {
+abstract class GenerateParserTask : JavaExec() {
+
+    init {
+        mainClass.set("org.intellij.grammar.Main")
+    }
 
     /**
      * The source BNF file to generate the parser from.
@@ -83,19 +85,17 @@ abstract class GenerateParserTask @Inject constructor(
      */
     @get:InputFiles
     @get:Classpath
-    abstract val classpath: ConfigurableFileCollection
+    abstract val grammarKitClasspath: ConfigurableFileCollection
 
     @TaskAction
-    fun generateParser() {
+    override fun exec() {
         ByteArrayOutputStream().use { os ->
             try {
-                execOperations.javaexec {
-                    mainClass.set("org.intellij.grammar.Main")
-                    args = getArguments()
-                    classpath = this@GenerateParserTask.classpath
-                    errorOutput = TeeOutputStream(System.out, os)
-                    standardOutput = TeeOutputStream(System.out, os)
-                }
+                args = getArguments()
+                classpath = this.grammarKitClasspath
+                errorOutput = TeeOutputStream(System.out, os)
+                standardOutput = TeeOutputStream(System.out, os)
+                super.exec()
             } catch (e: Exception) {
                 throw GradleException(os.toString().trim(), e)
             }
