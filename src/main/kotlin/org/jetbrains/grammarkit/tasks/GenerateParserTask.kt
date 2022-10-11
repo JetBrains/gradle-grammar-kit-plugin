@@ -3,17 +3,15 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.gradle.process.ExecOperations
 import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
 
 /**
  * The `generateParser` task generates a parser for the given grammar.
@@ -80,19 +78,11 @@ abstract class GenerateParserTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
-    /**
-     * The classpath with Grammar-Kit to use for the generation.
-     */
-    @get:InputFiles
-    @get:Classpath
-    abstract val grammarKitClasspath: ConfigurableFileCollection
-
     @TaskAction
     override fun exec() {
         ByteArrayOutputStream().use { os ->
             try {
                 args = getArguments()
-                classpath = this.grammarKitClasspath
                 errorOutput = TeeOutputStream(System.out, os)
                 standardOutput = TeeOutputStream(System.out, os)
                 super.exec()

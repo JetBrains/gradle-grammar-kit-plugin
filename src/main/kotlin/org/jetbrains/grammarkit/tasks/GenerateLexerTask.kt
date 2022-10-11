@@ -6,6 +6,7 @@ import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
@@ -77,19 +78,11 @@ abstract class GenerateLexerTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
-    /**
-     * The classpath with JFlex to use for the generation.
-     */
-    @get:InputFiles
-    @get:Classpath
-    abstract val jFlexClasspath: ConfigurableFileCollection
-
     @TaskAction
     override fun exec() {
         ByteArrayOutputStream().use { os ->
             try {
                 args = getArguments()
-                classpath = this@GenerateLexerTask.jFlexClasspath
                 errorOutput = TeeOutputStream(System.out, os)
                 standardOutput = TeeOutputStream(System.out, os)
                 super.exec()
