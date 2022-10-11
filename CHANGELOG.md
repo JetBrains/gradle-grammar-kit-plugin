@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 - Set minimum supported Gradle version from `6.7.1` to `6.8`
+- Make GenerateParserTask and GenerateLexerTask descendants of JavaExec
 
 ## [2021.2.2]
 - Remove redundant `bomConfiguration`
