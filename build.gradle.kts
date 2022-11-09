@@ -1,5 +1,6 @@
 // Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 
+import org.jetbrains.changelog.ChangelogSectionUrlBuilder
 import org.jetbrains.dokka.gradle.DokkaTask
 
 fun properties(key: String) = project.findProperty(key)?.toString()
@@ -27,9 +28,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    jvmToolchain(11)
 }
 
 gradlePlugin {
@@ -68,6 +67,19 @@ artifacts {
 changelog {
     headerParserRegex.set("""(\d+(\.\d+)+)""".toRegex())
     groups.set(emptyList())
+    repositoryUrl.set(properties("website"))
+    sectionUrlBuilder.set(ChangelogSectionUrlBuilder { repositoryUrl, currentVersion, previousVersion, isUnreleased ->
+        repositoryUrl + when {
+            isUnreleased -> when (previousVersion) {
+                null -> "/commits"
+                else -> "/compare/v$previousVersion...HEAD"
+            }
+
+            previousVersion == null -> "/commits/$currentVersion"
+
+            else -> "/compare/$previousVersion...$currentVersion"
+        }
+    })
 }
 
 tasks {

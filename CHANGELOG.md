@@ -111,3 +111,37 @@
 
 ## [2017.1]
 - First release
+
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...HEAD
+[2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
+[2021.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2...2021.2.1
+[2021.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.3...2021.2
+[2021.1.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.2...2021.1.3
+[2021.1.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.1...2021.1.2
+[2021.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1...2021.1.1
+[2021.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.3.2...2021.1
+[2020.3.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.3.1...2020.3.2
+[2020.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.2.1...2020.3.1
+[2020.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.2...2020.2.1
+[2020.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.4...2020.2
+[2020.1.4]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.3...2020.1.4
+[2020.1.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.2...2020.1.3
+[2020.1.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.1...2020.1.2
+[2020.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.3...2020.1.1
+[2019.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.2.1...2019.3
+[2019.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.2...2019.2.1
+[2019.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.1...2019.2
+[2019.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.3.1...2019.1
+[2018.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.3...2018.3.1
+[2018.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.2.2...2018.3
+[2018.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.2.1...2018.2.2
+[2018.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.2...2018.2.1
+[2018.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.7...2018.2
+[2018.1.7]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.6...2018.1.7
+[2018.1.6]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.3...2018.1.6
+[2018.1.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.2...2018.1.3
+[2018.1.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.1...2018.1.2
+[2018.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1...2018.1.1
+[2018.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1.1...2018.1
+[2017.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1...2017.1.1
+[2017.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/commits/2017.1
