@@ -6,7 +6,7 @@ object GrammarKitConstants {
     const val GROUP_NAME = "grammarKit"
     const val GENERATE_LEXER_TASK_NAME = "generateLexer"
     const val GENERATE_PARSER_TASK_NAME = "generateParser"
-    const val GRAMMAR_KIT_DEFAULT_VERSION = "2021.1.2"
+    const val GRAMMAR_KIT_DEFAULT_VERSION = "2023.1"
     const val JFLEX_DEFAULT_VERSION = "1.7.0-1"
     const val MINIMAL_SUPPORTED_GRADLE_VERSION = "6.8"
     const val GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME = "grammarKitClassPath"

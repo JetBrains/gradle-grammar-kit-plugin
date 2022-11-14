@@ -72,7 +72,7 @@ changelog {
         repositoryUrl + when {
             isUnreleased -> when (previousVersion) {
                 null -> "/commits"
-                else -> "/compare/v$previousVersion...HEAD"
+                else -> "/compare/$previousVersion...HEAD"
             }
 
             previousVersion == null -> "/commits/$currentVersion"
