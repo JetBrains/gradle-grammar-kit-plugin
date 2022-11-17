@@ -3,7 +3,8 @@
 ## [Unreleased]
 - Default Grammar-Kit updated to 2022.3
 - Make `GenerateParserTask` and `GenerateLexerTask` subclasses of `JavaExec`
-- Set minimum supported Gradle version from `6.7.1` to `6.8`
+- Set minimum supported Gradle version from `6.7.1` to `7.0`
+- Required Java version is `17`
 
 ## [2021.2.2]
 - Remove redundant `bomConfiguration`
