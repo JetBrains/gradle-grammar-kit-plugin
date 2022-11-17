@@ -1,7 +1,7 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
-- Default Grammar-Kit updated to 2023.1
+- Default Grammar-Kit updated to 2022.3
 - Make `GenerateParserTask` and `GenerateLexerTask` subclasses of `JavaExec`
 - Set minimum supported Gradle version from `6.7.1` to `6.8`
 
