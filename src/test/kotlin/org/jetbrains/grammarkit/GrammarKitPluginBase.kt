@@ -15,7 +15,7 @@ import kotlin.test.BeforeTest
 abstract class GrammarKitPluginBase {
 
     companion object {
-        const val DEFAULT_TESTING_INTELLIJ_RELEASE = "211.7628.24"
+        const val DEFAULT_TESTING_INTELLIJ_RELEASE = "222.3345.146"
     }
 
     private val gradleDefault = System.getProperty("test.gradle.default")
