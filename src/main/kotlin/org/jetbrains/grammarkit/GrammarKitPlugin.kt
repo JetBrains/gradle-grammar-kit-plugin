@@ -5,16 +5,17 @@ package org.jetbrains.grammarkit
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.PluginInstantiationException
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.grammarkit.GrammarKitConstants.MINIMAL_SUPPORTED_GRADLE_VERSION
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
-import java.net.URI
 
 @Suppress("unused")
 open class GrammarKitPlugin : Plugin<Project> {
@@ -106,12 +107,10 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
         }
 
-        project.repositories.apply {
-            maven {
-                url = URI("https://cache-redirector.jetbrains.com/intellij-dependencies")
-            }
-            maven {
-                url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
+        if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != RepositoriesMode.FAIL_ON_PROJECT_REPOS) {
+            project.repositories.apply {
+                maven(url = "https://cache-redirector.jetbrains.com/intellij-dependencies")
+                maven(url = "https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
         }
 
