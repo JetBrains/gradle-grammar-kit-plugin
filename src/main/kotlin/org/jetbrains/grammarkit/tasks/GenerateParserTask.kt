@@ -4,13 +4,11 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.jetbrains.grammarkit.path
+import org.jetbrains.grammarkit.*
 import java.io.ByteArrayOutputStream
 
 /**
@@ -20,6 +18,9 @@ import java.io.ByteArrayOutputStream
 abstract class GenerateParserTask : JavaExec() {
 
     init {
+        description = "Generates parsers for IntelliJ-based plugin"
+        group = GrammarKitConstants.GROUP_NAME
+
         mainClass.set("org.intellij.grammar.Main")
     }
 
@@ -78,8 +79,29 @@ abstract class GenerateParserTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
+    init {
+        sourceFile.convention(source.map {
+            project.layout.projectDirectory.file(it)
+        })
+        targetRootOutputDir.convention(targetRoot.map {
+            project.layout.projectDirectory.dir(it)
+        })
+        parserFile.convention(pathToParser.map {
+            project.layout.projectDirectory.file("${targetRoot.get()}/$it")
+        })
+        psiDir.convention(pathToPsiRoot.map {
+            project.layout.projectDirectory.dir("${targetRoot.get()}/$it")
+        })
+    }
+
     @TaskAction
     override fun exec() {
+        if (purgeOldFiles.orNull == true) {
+            targetRootOutputDir.get().asFile.apply {
+                resolve(pathToParser.get()).deleteRecursively()
+                resolve(pathToPsiRoot.get()).deleteRecursively()
+            }
+        }
         ByteArrayOutputStream().use { os ->
             try {
                 args = getArguments()

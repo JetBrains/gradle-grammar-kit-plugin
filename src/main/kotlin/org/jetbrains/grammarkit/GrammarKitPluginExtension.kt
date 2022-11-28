@@ -2,24 +2,20 @@
 
 package org.jetbrains.grammarkit
 
-import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
-import org.gradle.kotlin.dsl.property
-import javax.inject.Inject
 
-abstract class GrammarKitPluginExtension @Inject constructor(
-    objectFactory: ObjectFactory,
-) {
+abstract class GrammarKitPluginExtension {
 
     /**
      * The release version of the [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit) to use.
      *
      * Default value: `2021.1.2`
      */
-    @Input
-    @Optional
-    val grammarKitRelease = objectFactory.property<String>()
+    @get:Input
+    @get:Optional
+    abstract val grammarKitRelease: Property<String>
 
     /**
      * The version of the IntelliJ-patched JFlex, a [fork of JFlex](https://github.com/JetBrains/intellij-deps-jflex)
@@ -27,9 +23,9 @@ abstract class GrammarKitPluginExtension @Inject constructor(
      *
      * Default value: `1.7.0-1`
      */
-    @Input
-    @Optional
-    val jflexRelease = objectFactory.property<String>()
+    @get:Input
+    @get:Optional
+    abstract val jflexRelease: Property<String>
 
     /**
      * Version of the IntelliJ to build the classpath for [org.jetbrains.grammarkit.tasks.GenerateParserTask]
@@ -39,7 +35,12 @@ abstract class GrammarKitPluginExtension @Inject constructor(
      *
      * Default value: `null`
      */
-    @Input
-    @Optional
-    val intellijRelease = objectFactory.property<String>()
+    @get:Input
+    @get:Optional
+    abstract val intellijRelease: Property<String>
+
+    init {
+        grammarKitRelease.convention(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
+        jflexRelease.convention(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
+    }
 }

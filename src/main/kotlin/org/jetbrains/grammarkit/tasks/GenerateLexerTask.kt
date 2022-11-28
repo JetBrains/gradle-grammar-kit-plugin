@@ -4,13 +4,12 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.jetbrains.grammarkit.path
+import org.jetbrains.grammarkit.GrammarKitConstants
 import java.io.ByteArrayOutputStream
 
 /**
@@ -20,6 +19,9 @@ import java.io.ByteArrayOutputStream
 abstract class GenerateLexerTask : JavaExec() {
 
     init {
+        description = "Generates lexers for IntelliJ-based plugin"
+        group = GrammarKitConstants.GROUP_NAME
+
         mainClass.set("jflex.Main")
     }
 
@@ -78,8 +80,23 @@ abstract class GenerateLexerTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
+    init {
+        targetOutputDir.convention(targetDir.map {
+            project.layout.projectDirectory.dir(it)
+        })
+        targetFile.convention(targetClass.map {
+            project.layout.projectDirectory.file("${targetDir.get()}/$it.java")
+        })
+        sourceFile.convention(source.map {
+            project.layout.projectDirectory.file(it)
+        })
+    }
+
     @TaskAction
     override fun exec() {
+        if (purgeOldFiles.orNull == true) {
+            targetFile.get().asFile.deleteRecursively()
+        }
         ByteArrayOutputStream().use { os ->
             try {
                 args = getArguments()
