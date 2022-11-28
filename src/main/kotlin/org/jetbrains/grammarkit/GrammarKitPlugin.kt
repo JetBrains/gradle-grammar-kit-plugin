@@ -32,11 +32,11 @@ open class GrammarKitPlugin : Plugin<Project> {
         project.tasks.register<GenerateLexerTask>(GrammarKitConstants.GENERATE_LEXER_TASK_NAME)
 
         project.tasks.withType<GenerateLexerTask>().configureEach {
-            classpath(project.provider {
+            classpath(
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 }
-            })
+            )
         }
 
         project.tasks.register<GenerateParserTask>(GrammarKitConstants.GENERATE_PARSER_TASK_NAME)
@@ -52,13 +52,13 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party",
             )
 
-            classpath(project.provider {
+            classpath(
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
                         file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
                     }
                 }
-            })
+            )
         }
 
         project.repositories.apply {
