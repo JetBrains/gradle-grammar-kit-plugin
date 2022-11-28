@@ -76,7 +76,7 @@ open class GrammarKitPlugin : Plugin<Project> {
             val intellijRelease = extension.intellijRelease.orNull
 
             if (intellijRelease == null) {
-                compileOnlyConfiguration.get().apply {
+                compileOnlyConfiguration.configure {
                     dependencies.addAll(
                         listOf(
                             "org.jetbrains:grammar-kit:$grammarKitRelease",
@@ -99,7 +99,7 @@ open class GrammarKitPlugin : Plugin<Project> {
                 }
             } else {
                 configureGrammarKitClassPath(
-                    project, grammarKitClassPathConfiguration.get(), grammarKitRelease, jflexRelease, intellijRelease
+                    project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease
                 )
             }
         }
@@ -107,12 +107,12 @@ open class GrammarKitPlugin : Plugin<Project> {
 
     private fun configureGrammarKitClassPath(
         project: Project,
-        grammarKitClassPathConfiguration: Configuration,
+        grammarKitClassPathConfiguration: NamedDomainObjectProvider<Configuration>,
         grammarKitRelease: String,
         jflexRelease: String,
         intellijRelease: String,
     ) {
-        grammarKitClassPathConfiguration.apply {
+        grammarKitClassPathConfiguration.configure {
             dependencies.addAll(
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
