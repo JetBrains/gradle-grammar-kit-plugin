@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream
  * The `generateLexer` task generates a lexer for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
+@CacheableTask
 abstract class GenerateLexerTask : JavaExec() {
 
     init {
@@ -62,6 +63,7 @@ abstract class GenerateLexerTask : JavaExec() {
      * Source file computed from [source] path.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sourceFile: RegularFileProperty
 
     /**
@@ -70,6 +72,7 @@ abstract class GenerateLexerTask : JavaExec() {
      * By default, it uses the [`idea-flex.skeleton`](https://raw.github.com/JetBrains/intellij-community/master/tools/lexer/idea-flex.skeleton) skeleton file.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:Optional
     abstract val skeleton: RegularFileProperty
 

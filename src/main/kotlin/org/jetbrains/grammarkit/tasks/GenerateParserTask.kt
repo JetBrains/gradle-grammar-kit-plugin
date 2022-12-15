@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream
  * The `generateParser` task generates a parser for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
+@CacheableTask
 abstract class GenerateParserTask : JavaExec() {
 
     init {
@@ -34,6 +35,7 @@ abstract class GenerateParserTask : JavaExec() {
      * The source file computed from the [source] property.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sourceFile: RegularFileProperty
 
     /**
