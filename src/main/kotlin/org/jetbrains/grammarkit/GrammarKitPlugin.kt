@@ -75,7 +75,7 @@ open class GrammarKitPlugin : Plugin<Project> {
         val intellijRelease = extension.intellijRelease
         
         compileOnlyConfiguration.configure {
-            val grammarJFlexDeps = grammarKitRelease.zip(jflexRelease) { grammarKitRelease, flexRelease ->
+            val grammarJFlexDeps = grammarKitRelease.zip(jflexRelease) { grammarKitRelease, jflexRelease ->
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
                     "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
