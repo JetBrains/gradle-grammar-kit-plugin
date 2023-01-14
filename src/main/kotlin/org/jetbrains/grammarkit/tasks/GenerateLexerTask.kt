@@ -4,9 +4,8 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
+import org.gradle.api.file.*
+import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.jetbrains.grammarkit.path
 import org.jetbrains.grammarkit.GrammarKitConstants
@@ -27,39 +26,40 @@ abstract class GenerateLexerTask : JavaExec() {
     }
 
     /**
-     * Required.
      * The path to the target directory for the generated lexer.
      */
-    @get:Input
+    @get:Internal
     abstract val targetDir: Property<String>
 
     /**
+     * Required.
      * The output directory computed from the [targetDir] property.
      */
     @get:OutputDirectory
     abstract val targetOutputDir: DirectoryProperty
 
     /**
-     * Required.
      * The Java file name where the generated lexer will be written.
      */
-    @get:Input
+    @get:Internal
     abstract val targetClass: Property<String>
 
     /**
      * The output file computed from the [targetDir] and [targetClass] properties.
      */
-    @get:OutputFile
-    abstract val targetFile: RegularFileProperty
+    @OutputFile
+    val targetFile: Provider<RegularFile> = targetClass.zip(targetDir) { it, targetDir ->
+        project.layout.projectDirectory.file("$targetDir/$it.java")
+    }
 
     /**
-     * Required.
      * The source Flex file to generate the lexer from.
      */
-    @get:Input
+    @get:Internal
     abstract val source: Property<String>
 
     /**
+     * Required.
      * Source file computed from [source] path.
      */
     @get:InputFile
@@ -86,9 +86,6 @@ abstract class GenerateLexerTask : JavaExec() {
     init {
         targetOutputDir.convention(targetDir.map {
             project.layout.projectDirectory.dir(it)
-        })
-        targetFile.convention(targetClass.map {
-            project.layout.projectDirectory.file("${targetDir.get()}/$it.java")
         })
         sourceFile.convention(source.map {
             project.layout.projectDirectory.file(it)

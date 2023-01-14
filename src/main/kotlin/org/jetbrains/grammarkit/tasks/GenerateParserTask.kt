@@ -4,9 +4,11 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
+import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
+import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.jetbrains.grammarkit.*
 import java.io.ByteArrayOutputStream
@@ -28,10 +30,11 @@ abstract class GenerateParserTask : JavaExec() {
     /**
      * The source BNF file to generate the parser from.
      */
-    @get:Input
+    @get:Internal
     abstract val source: Property<String>
 
     /**
+     * Required.
      * The source file computed from the [source] property.
      */
     @get:InputFile
@@ -41,22 +44,25 @@ abstract class GenerateParserTask : JavaExec() {
     /**
      * The path to the target directory for the generated parser.
      */
-    @get:Input
+    @get:Internal
     abstract val targetRoot: Property<String>
 
     /**
+     * Required.
      * The output root directory computed from the [targetRoot] property.
      */
     @get:OutputDirectory
     abstract val targetRootOutputDir: DirectoryProperty
 
     /**
+     * Required.
      * The location of the generated parser class, relative to the [targetRoot].
      */
     @get:Input
     abstract val pathToParser: Property<String>
 
     /**
+     * Required.
      * The location of the generated PSI files, relative to the [targetRoot].
      */
     @get:Input
@@ -65,14 +71,18 @@ abstract class GenerateParserTask : JavaExec() {
     /**
      * The output parser file computed from the [pathToParser] property.
      */
-    @get:OutputFile
-    abstract val parserFile: RegularFileProperty
+    @OutputFile
+    val parserFile: Provider<RegularFile> = pathToParser.zip(targetRoot) { it, targetRoot ->
+        project.layout.projectDirectory.file("$targetRoot/$it")
+    }
 
     /**
      * The output PSI directory computed from the [pathToPsiRoot] property.
      */
-    @get:OutputDirectory
-    abstract val psiDir: DirectoryProperty
+    @OutputDirectory
+    val psiDir: Provider<Directory> = pathToPsiRoot.zip(targetRoot) { it, targetRoot ->
+        project.layout.projectDirectory.dir("$targetRoot/$it")
+    }
 
     /**
      * Purge old files from the target directory before generating the lexer.
@@ -87,12 +97,6 @@ abstract class GenerateParserTask : JavaExec() {
         })
         targetRootOutputDir.convention(targetRoot.map {
             project.layout.projectDirectory.dir(it)
-        })
-        parserFile.convention(pathToParser.map {
-            project.layout.projectDirectory.file("${targetRoot.get()}/$it")
-        })
-        psiDir.convention(pathToPsiRoot.map {
-            project.layout.projectDirectory.dir("${targetRoot.get()}/$it")
         })
     }
 
