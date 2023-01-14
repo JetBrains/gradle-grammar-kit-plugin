@@ -69,51 +69,37 @@ open class GrammarKitPlugin : Plugin<Project> {
                 url = URI("https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
         }
-
-        project.afterEvaluate {
-            val grammarKitRelease = extension.grammarKitRelease.get()
-            val jflexRelease = extension.jflexRelease.get()
-            val intellijRelease = extension.intellijRelease.orNull
-
-            if (intellijRelease == null) {
-                compileOnlyConfiguration.configure {
-                    dependencies.addAll(
-                        listOf(
-                            "org.jetbrains:grammar-kit:$grammarKitRelease",
-                            "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
-                        ).map(project.dependencies::create)
-                    )
-
-                    exclude(
-                        mapOf(
-                            "group" to "org.jetbrains.plugins",
-                            "module" to "ant",
-                        )
-                    )
-                    exclude(
-                        mapOf(
-                            "group" to "org.jetbrains.plugins",
-                            "module" to "idea",
-                        )
-                    )
+        
+        val grammarKitRelease = extension.grammarKitRelease
+        val jflexRelease = extension.jflexRelease
+        val intellijRelease = extension.intellijRelease
+        
+        compileOnlyConfiguration.configure {
+            val grammarJFlexDeps = grammarKitRelease.zip(jflexRelease) { grammarKitRelease, flexRelease ->
+                listOf(
+                    "org.jetbrains:grammar-kit:$grammarKitRelease",
+                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
+                ).map(project.dependencies::create).map { 
+                    it as ModuleDependency
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins","module" to "ant"))
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins", "module" to "idea"))
                 }
-            } else {
-                configureGrammarKitClassPath(
-                    project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease
-                )
             }
+            
+            dependencies.addAllLater(intellijRelease.zip(grammarJFlexDeps) { _, deps -> deps })
         }
+        configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
     }
 
     private fun configureGrammarKitClassPath(
         project: Project,
         grammarKitClassPathConfiguration: NamedDomainObjectProvider<Configuration>,
-        grammarKitRelease: String,
-        jflexRelease: String,
-        intellijRelease: String,
+        grammarKitRelease: Provider<String>,
+        jflexRelease: Provider<String>,
+        intellijRelease: Provider<String>,
     ) {
         grammarKitClassPathConfiguration.configure {
-            dependencies.addAll(
+            val deps = intellijRelease.zip(grammarKitRelease.zip(jflexRelease, ::Pair)) { intellijRelease, (grammarKitRelease, jflexRelease) ->
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
                     "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
@@ -122,15 +108,17 @@ open class GrammarKitPlugin : Plugin<Project> {
                     "com.jetbrains.intellij.platform:core-impl:$intellijRelease",
                     "com.jetbrains.intellij.platform:lang-impl:$intellijRelease",
                     "org.jetbrains.intellij.deps:asm-all:7.0.1",
-                ).map(project.dependencies::create)
-            )
-
-            exclude(mapOf("group" to "com.jetbrains.rd"))
-            exclude(mapOf("group" to "org.jetbrains.marketplace"))
-            exclude(mapOf("group" to "org.roaringbitmap"))
-            exclude(mapOf("group" to "org.jetbrains.plugins"))
-            exclude(mapOf("module" to "idea"))
-            exclude(mapOf("module" to "ant"))
+                ).map(project.dependencies::create).map { 
+                    it as ModuleDependency
+                    it.exclude(mapOf("group" to "com.jetbrains.rd"))
+                    it.exclude(mapOf("group" to "org.jetbrains.marketplace"))
+                    it.exclude(mapOf("group" to "org.roaringbitmap"))
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins"))
+                    it.exclude(mapOf("module" to "idea"))
+                    it.exclude(mapOf("module" to "ant"))
+                }
+            }
+            dependencies.addAllLater(deps)
         }
     }
 
