@@ -14,4 +14,4 @@ val <T : FileSystemLocation> Provider<T>.path: String
     get() = get().asFile.canonicalPath
 
 // https://github.com/gradle/gradle/issues/17295#issuecomment-1053620508
-val Project.settings: Settings get() = (gradle as GradleInternal).settings
+internal val Project.settings: Settings get() = (gradle as GradleInternal).settings
