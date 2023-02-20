@@ -2,13 +2,13 @@
 
 package org.jetbrains.grammarkit
 
-import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ModuleDependency
-import org.gradle.api.initialization.resolve.RepositoriesMode
-import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.initialization.resolve.RepositoriesMode.FAIL_ON_PROJECT_REPOS
+import org.gradle.api.plugins.JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME
+import org.gradle.api.plugins.JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME
 import org.gradle.api.plugins.PluginInstantiationException
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.create
@@ -16,36 +16,35 @@ import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.gradle.util.GradleVersion
+import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_LEXER_TASK_NAME
+import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_PARSER_TASK_NAME
+import org.jetbrains.grammarkit.GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME
 import org.jetbrains.grammarkit.GrammarKitConstants.MINIMAL_SUPPORTED_GRADLE_VERSION
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import java.io.File
 
-@Suppress("unused")
-open class GrammarKitPlugin : Plugin<Project> {
+@Suppress("UnstableApiUsage")
+abstract class GrammarKitPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         checkGradleVersion()
 
         val extension = project.extensions.create<GrammarKitPluginExtension>(GrammarKitConstants.GROUP_NAME)
 
-        val grammarKitClassPathConfiguration =
-            project.configurations.register(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
-        val compileClasspathConfiguration =
-            project.configurations.named(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
-        val compileOnlyConfiguration = project.configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
+        val grammarKitClassPathConfiguration = project.configurations.register(GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
+        val compileClasspathConfiguration = project.configurations.named(COMPILE_CLASSPATH_CONFIGURATION_NAME)
+        val compileOnlyConfiguration = project.configurations.named(COMPILE_ONLY_CONFIGURATION_NAME)
 
-        project.tasks.register<GenerateLexerTask>(GrammarKitConstants.GENERATE_LEXER_TASK_NAME)
+        project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME)
 
         project.tasks.withType<GenerateLexerTask>().configureEach {
-            classpath(
-                getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
-                    file.name.startsWith("jflex")
-                }
-            )
+            classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
+                file.name.startsWith("jflex")
+            })
         }
 
-        project.tasks.register<GenerateParserTask>(GrammarKitConstants.GENERATE_PARSER_TASK_NAME)
+        project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME)
 
         project.tasks.withType<GenerateParserTask>().configureEach {
             val requiredLibs = listOf(
@@ -58,28 +57,25 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party",
             )
 
-            classpath(
-                getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
-                    requiredLibs.any {
-                        file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
-                    }
+            classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
+                requiredLibs.any {
+                    file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
                 }
-            )
+            })
         }
 
-        if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != RepositoriesMode.FAIL_ON_PROJECT_REPOS) {
+        if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != FAIL_ON_PROJECT_REPOS) {
             project.repositories.apply {
                 maven(url = "https://cache-redirector.jetbrains.com/intellij-dependencies")
                 maven(url = "https://cache-redirector.jetbrains.com/intellij-repository/releases")
             }
         }
 
-        val grammarKitRelease = extension.grammarKitRelease
-        val jflexRelease = extension.jflexRelease
-        val intellijRelease = extension.intellijRelease
-
         compileOnlyConfiguration.configure {
-            val grammarJFlexDeps = grammarKitRelease.zip(jflexRelease) { grammarKitRelease, jflexRelease ->
+            val grammarJFlexDependencies = zip(
+                extension.grammarKitRelease,
+                extension.jflexRelease,
+            ) { grammarKitRelease, jflexRelease ->
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
                     "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
@@ -90,20 +86,23 @@ open class GrammarKitPlugin : Plugin<Project> {
                 }
             }
 
-            dependencies.addAllLater(intellijRelease.zip(grammarJFlexDeps) { _, deps -> deps })
+            dependencies.addAllLater(zip(
+                extension.intellijRelease,
+                grammarJFlexDependencies,
+            ) { intellijRelease, dependencies ->
+                when {
+                    intellijRelease.isEmpty() -> dependencies
+                    else -> emptyList()
+                }
+            })
         }
-        configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
-    }
 
-    private fun configureGrammarKitClassPath(
-        project: Project,
-        grammarKitClassPathConfiguration: NamedDomainObjectProvider<Configuration>,
-        grammarKitRelease: Provider<String>,
-        jflexRelease: Provider<String>,
-        intellijRelease: Provider<String>,
-    ) {
         grammarKitClassPathConfiguration.configure {
-            val deps = intellijRelease.zip(grammarKitRelease.zip(jflexRelease, ::Pair)) { intellijRelease, (grammarKitRelease, jflexRelease) ->
+            val platformDependencies = zip(
+                extension.intellijRelease,
+                extension.grammarKitRelease,
+                extension.jflexRelease,
+            ) { intellijRelease, grammarKitRelease, jflexRelease ->
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
                     "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
@@ -122,7 +121,15 @@ open class GrammarKitPlugin : Plugin<Project> {
                     it.exclude(mapOf("module" to "ant"))
                 }
             }
-            dependencies.addAllLater(deps)
+            dependencies.addAllLater(zip(
+                extension.intellijRelease,
+                platformDependencies,
+            ) { intellijRelease, dependencies ->
+                when {
+                    intellijRelease.isEmpty() -> emptyList()
+                    else -> dependencies
+                }
+            })
         }
     }
 
@@ -130,12 +137,11 @@ open class GrammarKitPlugin : Plugin<Project> {
         grammarKitClassPathConfiguration: Provider<Configuration>,
         compileClasspathConfiguration: Provider<Configuration>,
         filter: (File) -> Boolean,
-    ): Provider<Collection<File>> =
-        grammarKitClassPathConfiguration.zip(compileClasspathConfiguration) { grammar, compile ->
-            if (!grammar.isEmpty) {
-                grammar.files
-            } else compile.files.filter(filter)
-        }
+    ): Provider<Collection<File>> = zip(grammarKitClassPathConfiguration, compileClasspathConfiguration) { grammar, compile ->
+        if (!grammar.isEmpty) {
+            grammar.files
+        } else compile.files.filter(filter)
+    }
 
     private fun checkGradleVersion() {
         if (GradleVersion.current() < GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION)) {

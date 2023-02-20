@@ -42,5 +42,6 @@ abstract class GrammarKitPluginExtension {
     init {
         grammarKitRelease.convention(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
         jflexRelease.convention(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
+        intellijRelease.convention("")
     }
 }
