@@ -36,8 +36,8 @@ abstract class GrammarKitPluginBase {
 
         buildFile.groovy("""
             plugins {
-                id "java"
                 id "org.jetbrains.grammarkit"
+                id "java"
             }
             sourceCompatibility = 1.8
             targetCompatibility = 1.8
