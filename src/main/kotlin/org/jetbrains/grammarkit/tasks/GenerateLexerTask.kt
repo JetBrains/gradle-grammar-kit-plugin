@@ -53,14 +53,8 @@ abstract class GenerateLexerTask : JavaExec() {
     }
 
     /**
-     * The source Flex file to generate the lexer from.
-     */
-    @get:Internal
-    abstract val source: Property<String>
-
-    /**
      * Required.
-     * Source file computed from [source] path.
+     * The source Flex file to generate the lexer from.
      */
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -86,9 +80,6 @@ abstract class GenerateLexerTask : JavaExec() {
     init {
         targetOutputDir.convention(targetDir.map {
             project.layout.projectDirectory.dir(it)
-        })
-        sourceFile.convention(source.map {
-            project.layout.projectDirectory.file(it)
         })
     }
 
