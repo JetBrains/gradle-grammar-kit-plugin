@@ -28,14 +28,8 @@ abstract class GenerateParserTask : JavaExec() {
     }
 
     /**
-     * The source BNF file to generate the parser from.
-     */
-    @get:Internal
-    abstract val source: Property<String>
-
-    /**
      * Required.
-     * The source file computed from the [source] property.
+     * The source BNF file to generate the parser from.
      */
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -92,9 +86,6 @@ abstract class GenerateParserTask : JavaExec() {
     abstract val purgeOldFiles: Property<Boolean>
 
     init {
-        sourceFile.convention(source.map {
-            project.layout.projectDirectory.file(it)
-        })
         targetRootOutputDir.convention(targetRoot.map {
             project.layout.projectDirectory.dir(it)
         })

@@ -13,7 +13,7 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
     fun `run parser`() {
         buildFile.groovy("""
             generateParser {
-                source = "${getResourceFile("generateParser/Example.bnf")}"
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRoot = "gen"
                 pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
                 pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
@@ -30,7 +30,7 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
     fun `reuse configuration cache`() {
         buildFile.groovy("""
             generateParser {
-                source = "${getResourceFile("generateParser/Example.bnf")}"
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRoot = "gen"
                 pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
                 pathToPsiRoot = "/org/jetbrains/grammarkit/psi"

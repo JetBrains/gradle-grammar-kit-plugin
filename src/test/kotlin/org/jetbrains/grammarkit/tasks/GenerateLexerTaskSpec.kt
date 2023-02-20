@@ -13,7 +13,7 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
     fun `run lexer`() {
         buildFile.groovy("""
             generateLexer {
-                source = "${getResourceFile("generateLexer/Example.flex")}"
+                sourceFile = project.file("${getResourceFile("generateLexer/Example.flex")}")
                 targetDir = "gen/org/jetbrains/grammarkit/lexer/"
                 targetClass = "ExampleLexer"
             }
@@ -29,7 +29,7 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
     fun `reuse configuration cache`() {
         buildFile.groovy("""
             generateLexer {
-                source = "${getResourceFile("generateLexer/Example.flex")}"
+                sourceFile = project.file("${getResourceFile("generateLexer/Example.flex")}")
                 targetDir = "gen/org/jetbrains/grammarkit/lexer/"
                 targetClass = "ExampleLexer"
             }
