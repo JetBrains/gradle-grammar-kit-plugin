@@ -17,4 +17,38 @@ class GrammarKitPluginSpec : GrammarKitPluginBase() {
             tasks(GrammarKitConstants.GROUP_NAME),
         )
     }
+
+    @Test
+    fun `support centralized repository declaration`() {
+        file("settings.gradle").groovy("""
+            dependencyResolutionManagement {
+                repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+            
+                repositories {
+                    mavenCentral()
+                }
+            }
+            
+            rootProject.name = 'projectName'
+        """.trimIndent())
+        buildFile.writeText(
+            buildFile.readText().replace(
+                """
+                repositories {
+                    mavenCentral()
+                }
+                """.trimIndent(),
+                ""
+            )
+        )
+
+        assertEquals(
+            listOf(
+                GrammarKitConstants.GENERATE_LEXER_TASK_NAME,
+                GrammarKitConstants.GENERATE_PARSER_TASK_NAME,
+            ),
+            tasks(GrammarKitConstants.GROUP_NAME),
+        )
+    }
+
 }
