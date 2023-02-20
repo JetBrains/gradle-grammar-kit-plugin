@@ -27,6 +27,15 @@ abstract class GenerateParserTask : JavaExec() {
         mainClass.set("org.intellij.grammar.Main")
     }
 
+    @Deprecated(
+        message = "The `source` removed in favour of `sourceFile`",
+        replaceWith = ReplaceWith("sourceFile"),
+        level = DeprecationLevel.ERROR,
+    )
+    @get:Input
+    @get:Optional
+    abstract val source: Property<String>
+
     /**
      * Required.
      * The source BNF file to generate the parser from.

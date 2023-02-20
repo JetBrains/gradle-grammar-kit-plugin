@@ -7,8 +7,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
-import org.jetbrains.grammarkit.path
 import org.jetbrains.grammarkit.GrammarKitConstants
+import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 
 /**
@@ -51,6 +51,15 @@ abstract class GenerateLexerTask : JavaExec() {
     val targetFile: Provider<RegularFile> = targetClass.zip(targetDir) { it, targetDir ->
         project.layout.projectDirectory.file("$targetDir/$it.java")
     }
+
+    @Deprecated(
+        message = "The `source` removed in favour of `sourceFile`",
+        replaceWith = ReplaceWith("sourceFile"),
+        level = DeprecationLevel.ERROR,
+    )
+    @get:Input
+    @get:Optional
+    abstract val source: Property<String>
 
     /**
      * Required.
