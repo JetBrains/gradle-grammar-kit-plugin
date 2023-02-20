@@ -1,6 +1,7 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
+- Breaking change: remove `generateParser.source` and `generateLexer.source` properties in favour of `generateParser.sourceFile` and `generateLexer.sourceFile`
 - Set minimal supported Gradle to `7.4`
 
 ## [2022.3]
