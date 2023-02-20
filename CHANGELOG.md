@@ -1,6 +1,9 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
+- Set minimal supported Gradle to `7.4`
+
+## [2022.3]
 - Default Grammar-Kit updated to 2022.3
 - Make `GenerateParserTask` and `GenerateLexerTask` subclasses of `JavaExec`
 - Set minimum supported Gradle version from `6.7.1` to `7.0`
@@ -114,7 +117,8 @@
 ## [2017.1]
 - First release
 
-[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...HEAD
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3...HEAD
+[2022.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...2022.3
 [2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
 [2021.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2...2021.2.1
 [2021.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.3...2021.2
