@@ -10,7 +10,7 @@ import org.gradle.api.internal.GradleInternal
 import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.provider.Provider
 
-val <T : FileSystemLocation> Provider<T>.path: String
+internal val <T : FileSystemLocation> Provider<T>.path: String
     get() = get().asFile.canonicalPath
 
 // https://github.com/gradle/gradle/issues/17295#issuecomment-1053620508

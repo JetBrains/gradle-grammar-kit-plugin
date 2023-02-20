@@ -2,16 +2,20 @@
 
 package org.jetbrains.grammarkit
 
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.initialization.resolve.RepositoriesMode
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.PluginInstantiationException
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.gradle.util.GradleVersion
 import org.jetbrains.grammarkit.GrammarKitConstants.MINIMAL_SUPPORTED_GRADLE_VERSION
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
@@ -21,62 +25,27 @@ import java.io.File
 open class GrammarKitPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        checkGradleVersion(project)
+        checkGradleVersion()
 
-        val extension = project.extensions.create<GrammarKitPluginExtension>(GrammarKitConstants.GROUP_NAME).apply {
-            grammarKitRelease.convention(GrammarKitConstants.GRAMMAR_KIT_DEFAULT_VERSION)
-            jflexRelease.convention(GrammarKitConstants.JFLEX_DEFAULT_VERSION)
-        }
+        val extension = project.extensions.create<GrammarKitPluginExtension>(GrammarKitConstants.GROUP_NAME)
 
-        val grammarKitClassPathConfiguration = project.configurations.create(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
-        val compileClasspathConfiguration = project.configurations.maybeCreate(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
-        val compileOnlyConfiguration = project.configurations.maybeCreate(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
+        val grammarKitClassPathConfiguration =
+            project.configurations.register(GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
+        val compileClasspathConfiguration =
+            project.configurations.named(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
+        val compileOnlyConfiguration = project.configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
 
-        project.tasks.register<GenerateLexerTask>(GrammarKitConstants.GENERATE_LEXER_TASK_NAME) {
-            description = "Generates lexers for IntelliJ-based plugin"
-            group = GrammarKitConstants.GROUP_NAME
-        }
+        project.tasks.register<GenerateLexerTask>(GrammarKitConstants.GENERATE_LEXER_TASK_NAME)
 
         project.tasks.withType<GenerateLexerTask>().configureEach {
-            targetOutputDir.convention(targetDir.map {
-                project.layout.projectDirectory.dir(it)
-            })
-            targetFile.convention(targetClass.map {
-                project.layout.projectDirectory.file("${targetDir.get()}/$it.java")
-            })
-            sourceFile.convention(source.map {
-                project.layout.projectDirectory.file(it)
-            })
-            classpath(project.provider {
+            classpath(
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 }
-            })
-
-            doFirst {
-                if (purgeOldFiles.orNull == true) {
-                    targetFile.get().asFile.deleteRecursively()
-                }
-            }
+            )
         }
 
-        project.tasks.register<GenerateParserTask>(GrammarKitConstants.GENERATE_PARSER_TASK_NAME) {
-            description = "Generates parsers for IntelliJ-based plugin"
-            group = GrammarKitConstants.GROUP_NAME
-
-            sourceFile.convention(source.map {
-                project.layout.projectDirectory.file(it)
-            })
-            targetRootOutputDir.convention(targetRoot.map {
-                project.layout.projectDirectory.dir(it)
-            })
-            parserFile.convention(pathToParser.map {
-                project.layout.projectDirectory.file("${targetRoot.get()}/$it")
-            })
-            psiDir.convention(pathToPsiRoot.map {
-                project.layout.projectDirectory.dir("${targetRoot.get()}/$it")
-            })
-        }
+        project.tasks.register<GenerateParserTask>(GrammarKitConstants.GENERATE_PARSER_TASK_NAME)
 
         project.tasks.withType<GenerateParserTask>().configureEach {
             val requiredLibs = listOf(
@@ -89,22 +58,13 @@ open class GrammarKitPlugin : Plugin<Project> {
                 "testFramework", "3rd-party",
             )
 
-            classpath(project.provider {
+            classpath(
                 getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     requiredLibs.any {
                         file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
                     }
                 }
-            })
-
-            doFirst {
-                if (purgeOldFiles.orNull == true) {
-                    targetRootOutputDir.get().asFile.apply {
-                        resolve(pathToParser.get()).deleteRecursively()
-                        resolve(pathToPsiRoot.get()).deleteRecursively()
-                    }
-                }
-            }
+            )
         }
 
         if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != RepositoriesMode.FAIL_ON_PROJECT_REPOS) {
@@ -114,50 +74,36 @@ open class GrammarKitPlugin : Plugin<Project> {
             }
         }
 
-        project.afterEvaluate {
-            val grammarKitRelease = extension.grammarKitRelease.get()
-            val jflexRelease = extension.jflexRelease.get()
-            val intellijRelease = extension.intellijRelease.orNull
+        val grammarKitRelease = extension.grammarKitRelease
+        val jflexRelease = extension.jflexRelease
+        val intellijRelease = extension.intellijRelease
 
-            if (intellijRelease == null) {
-                compileOnlyConfiguration.apply {
-                    dependencies.addAll(
-                        listOf(
-                            "org.jetbrains:grammar-kit:$grammarKitRelease",
-                            "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
-                        ).map(project.dependencies::create)
-                    )
-
-                    exclude(
-                        mapOf(
-                            "group" to "org.jetbrains.plugins",
-                            "module" to "ant",
-                        )
-                    )
-                    exclude(
-                        mapOf(
-                            "group" to "org.jetbrains.plugins",
-                            "module" to "idea",
-                        )
-                    )
+        compileOnlyConfiguration.configure {
+            val grammarJFlexDeps = grammarKitRelease.zip(jflexRelease) { grammarKitRelease, jflexRelease ->
+                listOf(
+                    "org.jetbrains:grammar-kit:$grammarKitRelease",
+                    "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
+                ).map(project.dependencies::create).map {
+                    it as ModuleDependency
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins", "module" to "ant"))
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins", "module" to "idea"))
                 }
-            } else {
-                configureGrammarKitClassPath(
-                    project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease
-                )
             }
+
+            dependencies.addAllLater(intellijRelease.zip(grammarJFlexDeps) { _, deps -> deps })
         }
+        configureGrammarKitClassPath(project, grammarKitClassPathConfiguration, grammarKitRelease, jflexRelease, intellijRelease)
     }
 
     private fun configureGrammarKitClassPath(
         project: Project,
-        grammarKitClassPathConfiguration: Configuration,
-        grammarKitRelease: String,
-        jflexRelease: String,
-        intellijRelease: String,
+        grammarKitClassPathConfiguration: NamedDomainObjectProvider<Configuration>,
+        grammarKitRelease: Provider<String>,
+        jflexRelease: Provider<String>,
+        intellijRelease: Provider<String>,
     ) {
-        grammarKitClassPathConfiguration.apply {
-            dependencies.addAll(
+        grammarKitClassPathConfiguration.configure {
+            val deps = intellijRelease.zip(grammarKitRelease.zip(jflexRelease, ::Pair)) { intellijRelease, (grammarKitRelease, jflexRelease) ->
                 listOf(
                     "org.jetbrains:grammar-kit:$grammarKitRelease",
                     "org.jetbrains.intellij.deps.jflex:jflex:$jflexRelease",
@@ -166,29 +112,33 @@ open class GrammarKitPlugin : Plugin<Project> {
                     "com.jetbrains.intellij.platform:core-impl:$intellijRelease",
                     "com.jetbrains.intellij.platform:lang-impl:$intellijRelease",
                     "org.jetbrains.intellij.deps:asm-all:7.0.1",
-                ).map(project.dependencies::create)
-            )
-
-            exclude(mapOf("group" to "com.jetbrains.rd"))
-            exclude(mapOf("group" to "org.jetbrains.marketplace"))
-            exclude(mapOf("group" to "org.roaringbitmap"))
-            exclude(mapOf("group" to "org.jetbrains.plugins"))
-            exclude(mapOf("module" to "idea"))
-            exclude(mapOf("module" to "ant"))
+                ).map(project.dependencies::create).map {
+                    it as ModuleDependency
+                    it.exclude(mapOf("group" to "com.jetbrains.rd"))
+                    it.exclude(mapOf("group" to "org.jetbrains.marketplace"))
+                    it.exclude(mapOf("group" to "org.roaringbitmap"))
+                    it.exclude(mapOf("group" to "org.jetbrains.plugins"))
+                    it.exclude(mapOf("module" to "idea"))
+                    it.exclude(mapOf("module" to "ant"))
+                }
+            }
+            dependencies.addAllLater(deps)
         }
     }
 
     private fun getClasspath(
-        grammarKitClassPathConfiguration: Configuration,
-        compileClasspathConfiguration: Configuration,
+        grammarKitClassPathConfiguration: Provider<Configuration>,
+        compileClasspathConfiguration: Provider<Configuration>,
         filter: (File) -> Boolean,
-    ) = when {
-        !grammarKitClassPathConfiguration.isEmpty -> grammarKitClassPathConfiguration.files
-        else -> compileClasspathConfiguration.files.filter(filter)
-    }
+    ): Provider<Collection<File>> =
+        grammarKitClassPathConfiguration.zip(compileClasspathConfiguration) { grammar, compile ->
+            if (!grammar.isEmpty) {
+                grammar.files
+            } else compile.files.filter(filter)
+        }
 
-    private fun checkGradleVersion(project: Project) {
-        if (Version.parse(project.gradle.gradleVersion) < Version.parse(MINIMAL_SUPPORTED_GRADLE_VERSION)) {
+    private fun checkGradleVersion() {
+        if (GradleVersion.current() < GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION)) {
             throw PluginInstantiationException("gradle-grammarkit-plugin requires Gradle $MINIMAL_SUPPORTED_GRADLE_VERSION and higher")
         }
     }

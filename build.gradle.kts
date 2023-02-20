@@ -96,4 +96,8 @@ tasks {
         gradleVersion = properties("gradleVersion")
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
     }
+
+    validatePlugins {
+        enableStricterValidation.set(true)
+    }
 }

@@ -4,62 +4,66 @@ package org.jetbrains.grammarkit.tasks
 
 import org.apache.tools.ant.util.TeeOutputStream
 import org.gradle.api.GradleException
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
+import org.gradle.api.file.*
+import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.jetbrains.grammarkit.path
+import org.jetbrains.grammarkit.GrammarKitConstants
 import java.io.ByteArrayOutputStream
 
 /**
  * The `generateLexer` task generates a lexer for the given grammar.
  * The task is configured using common [org.jetbrains.grammarkit.GrammarKitPluginExtension] extension.
  */
+@CacheableTask
 abstract class GenerateLexerTask : JavaExec() {
 
     init {
+        description = "Generates lexers for IntelliJ-based plugin"
+        group = GrammarKitConstants.GROUP_NAME
+
         mainClass.set("jflex.Main")
     }
 
     /**
-     * Required.
      * The path to the target directory for the generated lexer.
      */
-    @get:Input
+    @get:Internal
     abstract val targetDir: Property<String>
 
     /**
+     * Required.
      * The output directory computed from the [targetDir] property.
      */
     @get:OutputDirectory
     abstract val targetOutputDir: DirectoryProperty
 
     /**
-     * Required.
      * The Java file name where the generated lexer will be written.
      */
-    @get:Input
+    @get:Internal
     abstract val targetClass: Property<String>
 
     /**
      * The output file computed from the [targetDir] and [targetClass] properties.
      */
-    @get:OutputFile
-    abstract val targetFile: RegularFileProperty
+    @OutputFile
+    val targetFile: Provider<RegularFile> = targetClass.zip(targetDir) { it, targetDir ->
+        project.layout.projectDirectory.file("$targetDir/$it.java")
+    }
 
     /**
-     * Required.
      * The source Flex file to generate the lexer from.
      */
-    @get:Input
+    @get:Internal
     abstract val source: Property<String>
 
     /**
+     * Required.
      * Source file computed from [source] path.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sourceFile: RegularFileProperty
 
     /**
@@ -68,6 +72,7 @@ abstract class GenerateLexerTask : JavaExec() {
      * By default, it uses the [`idea-flex.skeleton`](https://raw.github.com/JetBrains/intellij-community/master/tools/lexer/idea-flex.skeleton) skeleton file.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:Optional
     abstract val skeleton: RegularFileProperty
 
@@ -78,8 +83,20 @@ abstract class GenerateLexerTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
+    init {
+        targetOutputDir.convention(targetDir.map {
+            project.layout.projectDirectory.dir(it)
+        })
+        sourceFile.convention(source.map {
+            project.layout.projectDirectory.file(it)
+        })
+    }
+
     @TaskAction
     override fun exec() {
+        if (purgeOldFiles.orNull == true) {
+            targetFile.get().asFile.deleteRecursively()
+        }
         ByteArrayOutputStream().use { os ->
             try {
                 args = getArguments()
