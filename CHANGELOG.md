@@ -3,9 +3,10 @@
 ## [Unreleased]
 - Breaking change: remove `generateParser.source` and `generateLexer.source` properties in favour of `generateParser.sourceFile` and `generateLexer.sourceFile`
 - Set minimal supported Gradle to `7.4`
+- Default Grammar-Kit updated to `2022.3.1`
 
 ## [2022.3]
-- Default Grammar-Kit updated to 2022.3
+- Default Grammar-Kit updated to `2022.3`
 - Make `GenerateParserTask` and `GenerateLexerTask` subclasses of `JavaExec`
 - Set minimum supported Gradle version from `6.7.1` to `7.0`
 - Required Java version is `17`
