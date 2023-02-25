@@ -51,7 +51,7 @@ jobs:
       matrix:
         gradleVersion:
           - "7.4"
-          - "7.6"
+          - "7.6.1"
           - "8.0.1"
         os:
           - windows-latest
