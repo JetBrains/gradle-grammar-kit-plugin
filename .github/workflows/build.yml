@@ -82,12 +82,22 @@ jobs:
       - name: Run Tests
         run: ./gradlew check -PtestGradleVersion="${{ matrix.gradleVersion }}" ${{ runner.os == 'Windows' && '-PtestGradleUserHome="C:\\testGradleHome"' || '' }}
 
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: ${{ always() }}
+        with:
+          name: "Unit Tests Report: Gradle ${{ matrix.gradleVersion }} @ ${{ matrix.os }}"
+          path: "**/build/test-results/*/TEST-*.xml"
+          reporter: java-junit
+
       - name: Collect Test Results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
           name: test-results-${{ matrix.gradleVersion }}-${{ runner.os }}
-          path: ${{ github.workspace }}/build/reports/tests/test/
+          path: |
+            ${{ github.workspace }}/build/reports/tests/test/
+            ${{ github.workspace }}/build/reports/configuration-cache
 
   build:
     name: Build
