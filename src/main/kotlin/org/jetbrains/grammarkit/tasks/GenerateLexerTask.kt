@@ -28,12 +28,17 @@ abstract class GenerateLexerTask : JavaExec() {
     /**
      * The path to the target directory for the generated lexer.
      */
+    @Deprecated(
+        message = "Use targetOutputDir instead.",
+        replaceWith = ReplaceWith("targetOutputDir.set(project.layout.projectDirectory.dir(targetDir))"),
+        level = DeprecationLevel.ERROR
+    )
     @get:Internal
     abstract val targetDir: Property<String>
 
     /**
      * Required.
-     * The output directory computed from the [targetDir] property.
+     * The output directory for the generated lexer.
      */
     @get:OutputDirectory
     abstract val targetOutputDir: DirectoryProperty
@@ -41,24 +46,43 @@ abstract class GenerateLexerTask : JavaExec() {
     /**
      * The Java file name where the generated lexer will be written.
      */
+    @Deprecated(
+        message = "Setting this property has no effect, the generated lexerClass is set in the flex file.",
+        level = DeprecationLevel.ERROR
+    )
     @get:Internal
     abstract val targetClass: Property<String>
 
     /**
      * The output file computed from the [targetDir] and [targetClass] properties.
      */
-    @OutputFile
-    val targetFile: Provider<RegularFile> = targetClass.zip(targetDir) { it, targetDir ->
-        project.layout.projectDirectory.file("$targetDir/$it.java")
-    }
+    @Deprecated(
+        message = """The generated lexerClass is set in the flex file.
+            |Use targetOutDir if you want to get the folder or targetFile("LexerName") to get the generated lexer file""",
+        replaceWith = ReplaceWith("""targetFile(targetClass)"""),
+        level = DeprecationLevel.ERROR
+    )
+    @get:Internal
+    abstract val targetFile: Property<RegularFile>
+
+    /**
+     * The location of the lexer class computed from the [targetOutputDir].
+     * Because the lexer class is defined in the flex file, it needs to be passed here too.
+     */
+    fun targetFile(lexerClass: String): Provider<RegularFile> = targetOutputDir.file("${lexerClass}.java")
+
+    /**
+     * The location of the lexer class computed from the [targetOutputDir].
+     * Because the lexer class is defined in the flex file, it needs to be passed here too.
+     */
+    fun targetFile(lexerClass: Provider<String>): Provider<RegularFile> = lexerClass.flatMap(::targetFile)
 
     @Deprecated(
-        message = "The `source` removed in favour of `sourceFile`",
+        message = "The `source` was removed in favour of `sourceFile`.",
         replaceWith = ReplaceWith("sourceFile"),
         level = DeprecationLevel.ERROR,
     )
-    @get:Input
-    @get:Optional
+    @get:Internal
     abstract val source: Property<String>
 
     /**
@@ -86,16 +110,10 @@ abstract class GenerateLexerTask : JavaExec() {
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
 
-    init {
-        targetOutputDir.convention(targetDir.map {
-            project.layout.projectDirectory.dir(it)
-        })
-    }
-
     @TaskAction
     override fun exec() {
         if (purgeOldFiles.orNull == true) {
-            targetFile.get().asFile.deleteRecursively()
+            targetOutputDir.asFile.get().deleteRecursively()
         }
         ByteArrayOutputStream().use { os ->
             try {

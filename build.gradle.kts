@@ -8,15 +8,10 @@ fun properties(key: String) = project.findProperty(key)?.toString()
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    kotlin("jvm") version "1.8.10"
     id("com.gradle.plugin-publish") version "1.1.0"
     id("org.jetbrains.changelog") version "2.0.0"
     id("org.jetbrains.dokka") version "1.7.20"
 }
-
-version = properties("version")!!
-group = properties("group")!!
-description = properties("description")
 
 repositories {
     mavenCentral()
@@ -24,7 +19,6 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
 }
 
 kotlin {
@@ -44,14 +38,14 @@ gradlePlugin {
     }
 }
 
-val dokkaHtml by tasks.getting(DokkaTask::class)
+val dokkaHtml by tasks.existing(DokkaTask::class)
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn(dokkaHtml)
     archiveClassifier.set("javadoc")
-    from(dokkaHtml.outputDirectory)
+    from(dokkaHtml.map { it.outputDirectory })
 }
 
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
+val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }
@@ -82,9 +76,6 @@ changelog {
 tasks {
     test {
         val testGradleHomePath = "$buildDir/testGradleHome"
-        doFirst {
-            File(testGradleHomePath).mkdir()
-        }
         systemProperties["test.gradle.home"] = testGradleHomePath
         systemProperties["test.gradle.default"] = properties("gradleVersion")
         systemProperties["test.gradle.version"] = properties("testGradleVersion")
