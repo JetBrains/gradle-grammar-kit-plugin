@@ -79,7 +79,7 @@ abstract class GrammarKitPluginBase {
             .withTestKitDir(File(gradleHome))
             .withArguments("--configuration-cache", "--stacktrace", *tasks, *gradleArguments)
 
-    fun tasks(groupName: String) = build(ProjectInternal.TASKS_TASK, "--no-configuration-cache").output.lines().run {
+    fun tasks(groupName: String) = build(ProjectInternal.TASKS_TASK).output.lines().run {
         val start = indexOfFirst { it.equals("$groupName tasks", ignoreCase = true) } + 2
         drop(start).takeWhile(String::isNotEmpty).map { it.substringBefore(' ') }
     }
