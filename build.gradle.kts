@@ -9,7 +9,7 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     kotlin("jvm") version "1.9.10"
-    id("com.gradle.plugin-publish") version "1.2.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("org.jetbrains.changelog") version "2.1.2"
     id("org.jetbrains.dokka") version "1.8.20"
 }
