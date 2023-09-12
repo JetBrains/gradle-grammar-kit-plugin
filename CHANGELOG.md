@@ -1,7 +1,7 @@
 # Gradle Grammar-Kit Plugin Changelog
 
 ## [Unreleased]
-- Update JFlex dependency to `1.9.1`
+- Update JFlex dependency to `1.9.2` ([Changelog](https://github.com/JetBrains/intellij-deps-jflex/releases/tag/1.9.2))
 
 ## [2022.3.1] - 2023-02-23
 - Breaking change: remove `generateParser.source` and `generateLexer.source` properties in favour of `generateParser.sourceFile` and `generateLexer.sourceFile`
