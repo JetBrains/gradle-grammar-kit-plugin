@@ -3,20 +3,15 @@
 import org.jetbrains.changelog.ChangelogSectionUrlBuilder
 import org.jetbrains.dokka.gradle.DokkaTask
 
-fun properties(key: String) = project.findProperty(key)?.toString()
+fun properties(key: String) = providers.gradleProperty(key)
 
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    kotlin("jvm") version "1.9.21"
-    id("com.gradle.plugin-publish") version "1.2.1"
-    id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.10"
+    alias(libs.plugins.pluginPublish)
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.dokka)
 }
-
-version = properties("version")!!
-group = properties("group")!!
-description = properties("description")
 
 repositories {
     mavenCentral()
@@ -24,35 +19,35 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
 }
 
 kotlin {
     jvmToolchain(17)
 }
 
+@Suppress("UnstableApiUsage")
 gradlePlugin {
-    website.set(properties("website"))
-    vcsUrl.set(properties("vcsUrl"))
+    website = properties("website")
+    vcsUrl = properties("vcsUrl")
 
     plugins.create("grammarKitPlugin") {
-        id = properties("pluginId")
-        implementationClass = properties("pluginImplementationClass")
-        displayName = properties("pluginDisplayName")
-        description = properties("pluginDescription")
-        tags.set(properties("tags")?.split(','))
+        id = properties("pluginId").get()
+        implementationClass = properties("pluginImplementationClass").get()
+        displayName = properties("pluginDisplayName").get()
+        description = properties("pluginDescription").get()
+        tags = properties("tags").map { it.split(',') }
     }
 }
 
-val dokkaHtml by tasks.getting(DokkaTask::class)
+val dokkaHtml by tasks.existing(DokkaTask::class)
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn(dokkaHtml)
-    archiveClassifier.set("javadoc")
-    from(dokkaHtml.outputDirectory)
+    archiveClassifier = "javadoc"
+    from(dokkaHtml.map { it.outputDirectory })
 }
 
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier = "sources"
     from(sourceSets.main.get().allSource)
 }
 
@@ -62,10 +57,10 @@ artifacts {
 }
 
 changelog {
-    headerParserRegex.set("""(\d+(\.\d+)+)""".toRegex())
-    groups.set(emptyList())
-    repositoryUrl.set(properties("website"))
-    sectionUrlBuilder.set(ChangelogSectionUrlBuilder { repositoryUrl, currentVersion, previousVersion, isUnreleased ->
+    headerParserRegex = """(\d+(\.\d+)+)""".toRegex()
+    groups.empty()
+    repositoryUrl = properties("website")
+    sectionUrlBuilder = ChangelogSectionUrlBuilder { repositoryUrl, currentVersion, previousVersion, isUnreleased ->
         repositoryUrl + when {
             isUnreleased -> when (previousVersion) {
                 null -> "/commits"
@@ -76,28 +71,30 @@ changelog {
 
             else -> "/compare/$previousVersion...$currentVersion"
         }
-    })
+    }
 }
 
 tasks {
     test {
-        val testGradleHomePath = "$buildDir/testGradleHome"
-        doFirst {
-            File(testGradleHomePath).mkdir()
-        }
-        systemProperties["test.gradle.home"] = testGradleHomePath
+        val testGradleHome = properties("testGradleUserHome")
+            .map { File(it) }
+            .getOrElse(
+                layout.buildDirectory.asFile.map { it.resolve("testGradleHome") }.get()
+            )
+
+        systemProperties["test.gradle.home"] = testGradleHome
         systemProperties["test.gradle.default"] = properties("gradleVersion")
         systemProperties["test.gradle.version"] = properties("testGradleVersion")
         systemProperties["test.gradle.arguments"] = properties("testGradleArguments")
-        outputs.dir(testGradleHomePath)
+        outputs.dir(testGradleHome)
     }
 
     wrapper {
-        gradleVersion = properties("gradleVersion")
+        gradleVersion = properties("gradleVersion").get()
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
     }
 
     validatePlugins {
-        enableStricterValidation.set(true)
+        enableStricterValidation = true
     }
 }

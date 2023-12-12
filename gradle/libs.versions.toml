@@ -1,0 +1,10 @@
+[versions]
+# plugins
+dokka = "1.9.10"
+gradlePluginPublish = "1.2.1"
+gradleChangelogPlugin = "2.2.0"
+
+[plugins]
+pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradlePluginPublish" }
+changelog = { id = "org.jetbrains.changelog", version.ref = "gradleChangelogPlugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
