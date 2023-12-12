@@ -2,9 +2,11 @@
 
 package org.jetbrains.grammarkit.tasks
 
-import org.jetbrains.grammarkit.GrammarKitConstants
+import org.gradle.testkit.runner.TaskOutcome.*
+import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_PARSER_TASK_NAME
 import org.jetbrains.grammarkit.GrammarKitPluginBase
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class GenerateParserTaskSpec : GrammarKitPluginBase() {
@@ -14,15 +16,15 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
         buildFile.groovy("""
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
-                targetRoot = "gen"
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen")
                 pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
                 pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
         """)
 
-        val result = build(GrammarKitConstants.GENERATE_PARSER_TASK_NAME)
+        val result = build(GENERATE_PARSER_TASK_NAME)
 
-        assertTrue(result.output.contains("> Task :${GrammarKitConstants.GENERATE_PARSER_TASK_NAME}"))
+        assertTrue(result.output.contains("> Task :$GENERATE_PARSER_TASK_NAME"))
         assertTrue(adjustWindowsPath(result.output).contains("Example.bnf parser generated to ${adjustWindowsPath(dir.canonicalPath)}/gen"))
     }
 
@@ -31,15 +33,57 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
         buildFile.groovy("""
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
-                targetRoot = "gen"
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen")
                 pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
                 pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
         """)
 
-        build(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, "--configuration-cache")
-        val result = build(GrammarKitConstants.GENERATE_PARSER_TASK_NAME, "--configuration-cache")
+        val firstRun = build(GENERATE_PARSER_TASK_NAME, "--configuration-cache")
+        assertEquals(SUCCESS, firstRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
 
-        assertTrue(result.output.contains("Reusing configuration cache."))
+        val secondRun = build(GENERATE_PARSER_TASK_NAME, "--configuration-cache")
+        assertTrue(secondRun.output.contains("Reusing configuration cache."))
+        assertEquals(UP_TO_DATE, secondRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+    }
+
+    @Test
+    fun `supports build cache`() {
+        buildFile.groovy("""
+            generateParser {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+                targetRootOutputDir = project.layout.buildDirectory.dir("gen")
+                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
+                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
+            }
+        """)
+
+        val firstRun = build(GENERATE_PARSER_TASK_NAME, "--build-cache")
+        assertEquals(SUCCESS, firstRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+
+        build("clean", "--build-cache")
+
+        val secondRun = build(GENERATE_PARSER_TASK_NAME, "--build-cache")
+        assertEquals(FROM_CACHE, secondRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+    }
+
+    @Test
+    fun `support java srcDir`() {
+        buildFile.groovy("""
+            generateParser {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen")
+                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
+                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
+            }
+            sourceSets.main {
+              java.srcDir(tasks.generateParser)
+            }
+        """)
+
+        val cantCompileJava = true
+        val result = build(fail = cantCompileJava, "compileJava")
+
+        assertEquals(SUCCESS, result.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
     }
 }

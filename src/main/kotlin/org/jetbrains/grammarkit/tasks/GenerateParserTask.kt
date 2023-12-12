@@ -8,9 +8,11 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.*
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
-import org.jetbrains.grammarkit.*
+import org.jetbrains.grammarkit.GrammarKitConstants
+import org.jetbrains.grammarkit.path
 import java.io.ByteArrayOutputStream
 
 /**
@@ -28,12 +30,11 @@ abstract class GenerateParserTask : JavaExec() {
     }
 
     @Deprecated(
-        message = "The `source` removed in favour of `sourceFile`",
+        message = "The `source` was removed in favour of `sourceFile`.",
         replaceWith = ReplaceWith("sourceFile"),
         level = DeprecationLevel.ERROR,
     )
-    @get:Input
-    @get:Optional
+    @get:Internal
     abstract val source: Property<String>
 
     /**
@@ -47,19 +48,24 @@ abstract class GenerateParserTask : JavaExec() {
     /**
      * The path to the target directory for the generated parser.
      */
+    @Deprecated(
+        message = "The `targetRoot` was removed in favour of `targetRootOutputDir`.",
+        replaceWith = ReplaceWith("targetRootOutputDir"),
+        level = DeprecationLevel.ERROR,
+    )
     @get:Internal
     abstract val targetRoot: Property<String>
 
     /**
      * Required.
-     * The output root directory computed from the [targetRoot] property.
+     * The output root directory.
      */
     @get:OutputDirectory
     abstract val targetRootOutputDir: DirectoryProperty
 
     /**
      * Required.
-     * The location of the generated parser class, relative to the [targetRoot].
+     * The location of the generated parser class, relative to the [targetRootOutputDir].
      */
     @get:Input
     abstract val pathToParser: Property<String>
@@ -74,18 +80,12 @@ abstract class GenerateParserTask : JavaExec() {
     /**
      * The output parser file computed from the [pathToParser] property.
      */
-    @OutputFile
-    val parserFile: Provider<RegularFile> = pathToParser.zip(targetRoot) { it, targetRoot ->
-        project.layout.projectDirectory.file("$targetRoot/$it")
-    }
+    fun parserFile(): Provider<RegularFile> = targetRootOutputDir.file(pathToParser)
 
     /**
      * The output PSI directory computed from the [pathToPsiRoot] property.
      */
-    @OutputDirectory
-    val psiDir: Provider<Directory> = pathToPsiRoot.zip(targetRoot) { it, targetRoot ->
-        project.layout.projectDirectory.dir("$targetRoot/$it")
-    }
+    fun psiDir(): Provider<Directory> = targetRootOutputDir.dir(pathToPsiRoot)
 
     /**
      * Purge old files from the target directory before generating the lexer.
@@ -93,12 +93,6 @@ abstract class GenerateParserTask : JavaExec() {
     @get:Input
     @get:Optional
     abstract val purgeOldFiles: Property<Boolean>
-
-    init {
-        targetRootOutputDir.convention(targetRoot.map {
-            project.layout.projectDirectory.dir(it)
-        })
-    }
 
     @TaskAction
     override fun exec() {

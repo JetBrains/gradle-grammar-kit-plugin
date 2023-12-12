@@ -83,9 +83,9 @@ tasks {
             )
 
         systemProperties["test.gradle.home"] = testGradleHome
-        systemProperties["test.gradle.default"] = properties("gradleVersion")
-        systemProperties["test.gradle.version"] = properties("testGradleVersion")
-        systemProperties["test.gradle.arguments"] = properties("testGradleArguments")
+        systemProperties["test.gradle.default"] = properties("gradleVersion").orNull
+        systemProperties["test.gradle.version"] = properties("testGradleVersion").orNull
+        systemProperties["test.gradle.arguments"] = properties("testGradleArguments").orNull
         outputs.dir(testGradleHome)
     }
 
