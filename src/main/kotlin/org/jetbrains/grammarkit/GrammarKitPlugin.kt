@@ -48,7 +48,7 @@ abstract class GrammarKitPlugin : Plugin<Project> {
 
             project.tasks.withType<GenerateParserTask>().configureEach {
                 val requiredLibs = listOf(
-                    "app", "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
+                    "app", "lib", "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
                     "util", "util_rt", "annotations", "picocontainer", "extensions", "idea", "openapi", "grammar-kit",
                     "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
                     // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
