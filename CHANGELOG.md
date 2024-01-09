@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2022.3.2.1] - 2023-12-22
+
+- Fixes plugin for recent IntelliJ master where required libraries where changed
+
 ## [2022.3.2] - 2023-09-18
 
 - Update JFlex dependency to `1.9.2` ([Changelog](https://github.com/JetBrains/intellij-deps-jflex/releases/tag/1.9.2))
