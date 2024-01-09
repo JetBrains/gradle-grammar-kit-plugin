@@ -2,6 +2,7 @@
 
 package org.jetbrains.grammarkit
 
+// update docs for GrammarKitPluginExtension default values
 object GrammarKitConstants {
     const val GROUP_NAME = "grammarKit"
     const val GENERATE_LEXER_TASK_NAME = "generateLexer"

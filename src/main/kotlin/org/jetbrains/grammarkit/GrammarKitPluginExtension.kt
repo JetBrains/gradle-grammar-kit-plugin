@@ -11,7 +11,7 @@ abstract class GrammarKitPluginExtension {
     /**
      * The release version of the [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit) to use.
      *
-     * Default value: `2021.1.2`
+     * Default value: `2022.3.2`
      */
     @get:Input
     @get:Optional
@@ -21,7 +21,7 @@ abstract class GrammarKitPluginExtension {
      * The version of the IntelliJ-patched JFlex, a [fork of JFlex](https://github.com/JetBrains/intellij-deps-jflex)
      * lexer generator for IntelliJ Platform API.
      *
-     * Default value: `1.7.0-1`
+     * Default value: 1.9.2
      */
     @get:Input
     @get:Optional
