@@ -123,7 +123,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Cache XDG_CACHE_HOME
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.XDG_CACHE_HOME }}
           key: ${{ runner.os }}-XDG_CACHE_HOME-${{ hashFiles('**/*.gradle*') }}
