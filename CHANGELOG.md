@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
+## [2022.3.2.2] - 2024-02-21
+
 - Support for IntelliJ Platform `2024.1` — added `opentelementry` library.
+- Fixes plugin for recent IntelliJ master where required libraries where changed
+- Update JFlex dependency to `1.9.2` ([Changelog](https://github.com/JetBrains/intellij-deps-jflex/releases/tag/1.9.2))
+- Default Grammar-Kit updated to `2022.3.2` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
 
 ## [2022.3.2.1] - 2023-12-22
 
@@ -166,7 +171,7 @@
 
 - First release
 
-[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2...HEAD
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.2...HEAD
 [2022.3.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.1...2022.3.2
 [2022.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3...2022.3.1
 [2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
@@ -202,3 +207,5 @@
 [2021.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.3.2...2021.1
 [2021.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.3...2021.2
 [2022.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...2022.3
+[2022.3.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2...2022.3.2.1
+[2022.3.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.1...2022.3.2.2
