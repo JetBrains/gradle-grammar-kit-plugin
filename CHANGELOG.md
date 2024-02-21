@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Support for IntelliJ Platform `2024.1` — added `opentelementry` library.
+
 ## [2022.3.2.1] - 2023-12-22
 
 - Fixes plugin for recent IntelliJ master where required libraries where changed
