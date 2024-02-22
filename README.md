@@ -5,7 +5,9 @@
 [![Slack](https://img.shields.io/badge/Slack-%23intellij--platform-blue?style=flat-square&logo=Slack)][jb:slack]
 
 # Gradle Grammar-Kit Plugin
-This Gradle plugin automates generating lexers and parsers to support building custom language plugins for IntelliJ-based IDEs when using [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit).
+This Gradle plugin automates generating lexers and parsers to support building 
+[custom language plugins](https://plugins.jetbrains.com/docs/intellij/custom-language-support.html) 
+for IntelliJ-based IDEs when using [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit).
 
 # Documentation
 The documentation of the Gradle Grammar-Kit Plugin has moved to the IntelliJ Platform Plugin SDK Documentation:
