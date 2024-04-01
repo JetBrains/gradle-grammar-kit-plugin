@@ -176,6 +176,68 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
     }
 
     @Test
+    fun `purge stale files by default`() {
+        testPurgeStaleFiles(
+            expectPurge = true,
+            configuration = """
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen/")
+                """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun `do not purge stale files when disabled`() {
+        testPurgeStaleFiles(
+            expectPurge = false,
+            configuration = """
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen/")
+                purgeOldFiles = false
+                """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun `do not purge stale files by default when using targetOutputDir`() {
+        testPurgeStaleFiles(
+            expectPurge = false,
+            configuration = """
+                targetOutputDir = project.layout.projectDirectory.dir("gen/")
+                """.trimIndent(),
+        )
+    }
+
+    private fun testPurgeStaleFiles(
+        expectPurge: Boolean,
+        @Language("Groovy", prefix = "//file:noinspection GroovyUnusedAssignment\n") configuration: String,
+    ) {
+        val sourceFile = file("ModifiableExample.flex")
+        sourceFile.appendText(getResourceContent("generateLexer/Example.flex"))
+
+        buildFile.groovy("""
+            |generateLexer {
+            |    sourceFile = project.file("ModifiableExample.flex")
+            |    ${configuration.trimIndent().replace("\n", "\n|    ")}
+            |}
+        """.trimMargin())
+
+        val firstRun = build(GENERATE_LEXER_TASK_NAME)
+        val markerFile = file("gen/STALE.txt")
+
+        assertEquals(SUCCESS, firstRun.task(":$GENERATE_LEXER_TASK_NAME")?.outcome)
+        assertTrue("marker file doesn't exist") { markerFile.exists() }
+        assertTrue("GeneratedLexer.java doesn't exist") { dir.resolve("gen/GeneratedLexer.java").exists() }
+
+        sourceFile.writeText(sourceFile.readText().replace("GeneratedLexer", "GeneratedLexer2"))
+        val secondRun = build(GENERATE_LEXER_TASK_NAME)
+
+        assertEquals(SUCCESS, secondRun.task(":$GENERATE_LEXER_TASK_NAME")?.outcome)
+        assertTrue("GeneratedLexer2.java doesn't exist") { dir.resolve("gen/GeneratedLexer2.java").exists() }
+
+        assertEquals(expectPurge, !markerFile.exists(), "marker file purged")
+        assertEquals(expectPurge, !dir.resolve("gen/GeneratedLexer.java").exists(), "GeneratedLexer.java purged")
+    }
+
+    @Test
     fun `report error if no output directory is specified`() {
         buildFile.groovy("""
             generateLexer {

@@ -91,8 +91,24 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
     }
 
     @Test
-    fun `purge stale files when enabled`() {
-        testPurgeStaleFiles(expectPurge = true, configuration = "purgeOldFiles = true")
+    fun `purge stale files by default`() {
+        testPurgeStaleFiles(expectPurge = true)
+    }
+
+    @Test
+    fun `do not purge stale files when disabled`() {
+        testPurgeStaleFiles(expectPurge = false, configuration = "purgeOldFiles = false")
+    }
+
+    @Test
+    fun `do not purge stale files by default when using pathToParser and pathToPsiRoot`() {
+        testPurgeStaleFiles(
+            expectPurge = false,
+            configuration = """
+                pathToParser = "pkg/lang"
+                pathToPsiRoot = "pkg/psi"
+                """.trimIndent(),
+        )
     }
 
     @Test
