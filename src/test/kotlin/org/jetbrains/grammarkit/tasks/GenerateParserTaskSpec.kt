@@ -49,6 +49,15 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
 
     @Test
     fun `supports build cache`() {
+        settingsFile.groovy("""
+            // Use temporary directory for build cache,
+            // as the second execution of this test will fail otherwise if the cache hasn't been cleaned
+            buildCache {
+                local {
+                    directory = file("build-cache")
+                }
+            }
+        """.trimIndent())
         buildFile.groovy("""
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")

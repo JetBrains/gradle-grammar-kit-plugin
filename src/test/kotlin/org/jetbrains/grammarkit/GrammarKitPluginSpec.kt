@@ -20,7 +20,7 @@ class GrammarKitPluginSpec : GrammarKitPluginBase() {
 
     @Test
     fun `support centralized repository declaration`() {
-        file("settings.gradle").groovy("""
+        settingsFile.groovy("""
             dependencyResolutionManagement {
                 repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
             

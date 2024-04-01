@@ -28,11 +28,12 @@ abstract class GrammarKitPluginBase {
     val dir: File = createTempDirectory("tmp").toFile()
 
     val gradleProperties = file("gradle.properties")
+    val settingsFile = file("settings.gradle")
     val buildFile = file("build.gradle")
 
     @BeforeTest
     open fun setUp() {
-        file("settings.gradle").groovy("rootProject.name = 'projectName'")
+        settingsFile.groovy("rootProject.name = 'projectName'")
 
         buildFile.groovy("""
             plugins {
