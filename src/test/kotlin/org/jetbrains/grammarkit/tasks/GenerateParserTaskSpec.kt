@@ -88,10 +88,11 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
             sourceSets.main {
               java.srcDir(tasks.generateParser)
             }
+            // Skip compilation as it would fail since the necissary dependnecies are not available
+            tasks.compileJava.onlyIf { false }
         """)
 
-        val cantCompileJava = true
-        val result = build(fail = cantCompileJava, "compileJava")
+        val result = build("compileJava")
 
         assertEquals(SUCCESS, result.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
     }
