@@ -118,5 +118,7 @@ abstract class GrammarKitPluginBase {
 
     protected fun getResourceFile(name: String) = javaClass.classLoader.getResource(name)?.file
 
+    protected fun getResourceContent(name: String) = javaClass.classLoader.getResource(name)!!.readText()
+
     protected fun adjustWindowsPath(s: String) = s.replace("\\", "/")
 }
