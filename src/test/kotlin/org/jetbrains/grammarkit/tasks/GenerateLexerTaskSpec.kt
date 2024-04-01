@@ -240,15 +240,30 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
     @Test
     fun `report error if no output directory is specified`() {
         buildFile.groovy("""
-            generateLexer {
+            import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+            task lexerTask(type: GenerateLexerTask) {
                 sourceFile = project.file("${getResourceFile("generateLexer/Example.flex")}")
             }
         """.trimIndent())
 
-        val result = build(fail = true, GENERATE_LEXER_TASK_NAME)
+        val result = build(fail = true, "lexerTask")
 
-        assertEquals(FAILED, result.task(":$GENERATE_LEXER_TASK_NAME")?.outcome)
+        assertEquals(FAILED, result.task(":lexerTask")?.outcome)
         assertTrue("targetRootOutputDir not mentioned") { result.output.contains("targetRootOutputDir") }
         assertTrue("targetOutputDir not mentioned") { result.output.contains("targetOutputDir") }
+    }
+
+    @Test
+    fun `provide default for targetRootOutputDir of generateLexer task`() {
+        buildFile.groovy("""
+            generateLexer {
+                sourceFile = project.file("${getResourceFile("generateLexer/Example.flex")}")
+                // do not specify targetRootOutputDir
+            }
+        """.trimIndent())
+
+        val result = build(GENERATE_LEXER_TASK_NAME)
+
+        assertEquals(SUCCESS, result.task(":$GENERATE_LEXER_TASK_NAME")?.outcome)
     }
 }
