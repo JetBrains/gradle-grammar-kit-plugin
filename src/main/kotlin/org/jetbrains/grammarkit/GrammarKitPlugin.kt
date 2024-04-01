@@ -11,12 +11,16 @@ import org.gradle.api.plugins.JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME
 import org.gradle.api.plugins.JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME
 import org.gradle.api.plugins.PluginInstantiationException
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.gradle.util.GradleVersion
+import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_LEXER_OUT_DIR
 import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_LEXER_TASK_NAME
+import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_PARSER_OUT_DIR
 import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_PARSER_TASK_NAME
 import org.jetbrains.grammarkit.GrammarKitConstants.GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME
 import org.jetbrains.grammarkit.GrammarKitConstants.MINIMAL_SUPPORTED_GRADLE_VERSION
@@ -36,15 +40,20 @@ abstract class GrammarKitPlugin : Plugin<Project> {
             val compileClasspathConfiguration = project.configurations.named(COMPILE_CLASSPATH_CONFIGURATION_NAME)
             val compileOnlyConfiguration = project.configurations.named(COMPILE_ONLY_CONFIGURATION_NAME)
 
-            project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME)
+            project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME) {
+                targetRootOutputDir.convention(project.layout.buildDirectory.dir(GENERATE_LEXER_OUT_DIR))
+                // Further configuration of this task is performed below together with all other tasks of type GenerateLexerTask
+            }
+            project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME) {
+                targetRootOutputDir.convention(project.layout.buildDirectory.dir(GENERATE_PARSER_OUT_DIR))
+                // Further configuration of this task is performed below together with all other tasks of type GenerateParserTask
+            }
 
             project.tasks.withType<GenerateLexerTask>().configureEach {
                 classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("jflex")
                 })
             }
-
-            project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME)
 
             project.tasks.withType<GenerateParserTask>().configureEach {
                 val requiredLibs = listOf(

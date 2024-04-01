@@ -195,4 +195,33 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
         assertEquals(FAILED, secondRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
         assertTrue("error message missing") { secondRun.output.contains("'pathToParser' has a configured value, but 'pathToPsiRoot' has not.") }
     }
+
+    @Test
+    fun `report error if no output directory is specified`() {
+        buildFile.groovy("""
+            import org.jetbrains.grammarkit.tasks.GenerateParserTask
+            task parserTask(type: GenerateParserTask) {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+            }
+        """.trimIndent())
+
+        val result = build(fail = true, "parserTask")
+
+        assertEquals(FAILED, result.task(":parserTask")?.outcome)
+        assertTrue("targetRootOutputDir not mentioned") { result.output.contains("targetRootOutputDir") }
+    }
+
+    @Test
+    fun `provide default for targetRootOutputDir of generateParser task`() {
+        buildFile.groovy("""
+            generateParser {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+                // do not specify targetRootOutputDir
+            }
+        """.trimIndent())
+
+        val result = build(GENERATE_PARSER_TASK_NAME)
+
+        assertEquals(SUCCESS, result.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+    }
 }
