@@ -82,10 +82,11 @@ class GenerateLexerTaskSpec : GrammarKitPluginBase() {
             sourceSets.main {
               java.srcDir(tasks.generateLexer)
             }
+            // Skip compilation as it would fail since the necissary dependnecies are not available
+            tasks.compileJava.onlyIf { false }
         """)
 
-        val cantCompileJava = true
-        val result = build(fail = cantCompileJava, "compileJava")
+        val result = build("compileJava")
 
         assertEquals(SUCCESS, result.task(":$GENERATE_LEXER_TASK_NAME")?.outcome)
     }
