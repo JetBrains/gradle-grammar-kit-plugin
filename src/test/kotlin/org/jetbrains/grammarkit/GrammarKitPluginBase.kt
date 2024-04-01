@@ -106,6 +106,8 @@ abstract class GrammarKitPluginBase {
     // Methods can be simplified, when following tickets will be handled:
     // https://youtrack.jetbrains.com/issue/KT-24517
     // https://youtrack.jetbrains.com/issue/KTIJ-1001
+    fun File.bnf(@Language("BNF", prefix = "//noinspection BnfResolveForFile\n") content: String) = append(content)
+
     fun File.xml(@Language("XML") content: String) = append(content)
 
     fun File.groovy(@Language("Groovy") content: String) = append(content)
