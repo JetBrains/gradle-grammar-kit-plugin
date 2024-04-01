@@ -16,6 +16,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.gradle.util.GradleVersion
 import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_LEXER_OUT_DIR
@@ -40,13 +41,25 @@ abstract class GrammarKitPlugin : Plugin<Project> {
             val compileClasspathConfiguration = project.configurations.named(COMPILE_CLASSPATH_CONFIGURATION_NAME)
             val compileOnlyConfiguration = project.configurations.named(COMPILE_ONLY_CONFIGURATION_NAME)
 
-            project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME) {
+            val generateLexerTask = project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME) {
+                sourceFile.convention(extension.lexerSource)
                 targetRootOutputDir.convention(project.layout.buildDirectory.dir(GENERATE_LEXER_OUT_DIR))
                 // Further configuration of this task is performed below together with all other tasks of type GenerateLexerTask
             }
-            project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME) {
+            val generateParserTask = project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME) {
+                sourceFile.convention(extension.parserSource)
                 targetRootOutputDir.convention(project.layout.buildDirectory.dir(GENERATE_PARSER_OUT_DIR))
                 // Further configuration of this task is performed below together with all other tasks of type GenerateParserTask
+            }
+
+            project.the(SourceSetContainer::class).named(SourceSet.MAIN_SOURCE_SET_NAME) {
+                java {
+                    srcDirs(
+                        // Using `.orElse(listOf())` as a workaround because Gradle doesn't allow empty providers in `SourceDirectorySet.srcDirs`
+                        extension.lexerSource.zip(generateLexerTask) { _, task -> listOf(task) }.orElse(listOf()),
+                        extension.parserSource.zip(generateParserTask) { _, task -> listOf(task) }.orElse(listOf()),
+                    )
+                }
             }
 
             project.tasks.withType<GenerateLexerTask>().configureEach {
