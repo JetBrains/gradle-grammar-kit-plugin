@@ -46,8 +46,6 @@ jobs:
     name: Gradle ${{ matrix.gradleVersion }} @ ${{ matrix.os }}
     needs: gradleValidation
     runs-on: ${{ matrix.os }}
-    permissions:
-      checks: write
     strategy:
       fail-fast: false
       matrix:
@@ -84,14 +82,6 @@ jobs:
       - name: Run Tests
         run: ./gradlew check -PtestGradleVersion="${{ matrix.gradleVersion }}" ${{ runner.os == 'Windows' && '-PtestGradleUserHome="C:\\testGradleHome"' || '' }}
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: ${{ always() }}
-        with:
-          name: "Unit Tests Report: Gradle ${{ matrix.gradleVersion }} @ ${{ matrix.os }}"
-          path: "**/build/test-results/*/TEST-*.xml"
-          reporter: java-junit
-
       - name: Collect Test Results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -100,6 +90,7 @@ jobs:
           path: |
             ${{ github.workspace }}/build/reports/tests/test/
             ${{ github.workspace }}/build/reports/configuration-cache
+            ${{ github.workspace }}/build/test-results
 
   build:
     name: Build
