@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+- Simplifies plugin configuration.
+  The following block represents the new minimal configuration:
+
+  ```kotlin
+  grammarKit {
+      lexerSource = layout.projectDirectory.file("<path to *.flex file>")
+      parserSource = layout.projectDirectory.file("<path to *.bnf file>")
+  }
+  ```
+- Introduces `GenerateLexerTask.targetRootOutputDir` as a replacement of `targetOutputDir`.
+  Automatically create a subdirectory matching the package when using this new property.
+- Deprecates `pathToParser` and `pathToPsiRoot` of `GenerateParserTask`.
+- Purge stale files by default (as soon as you migrated away from the old properties)
+
 ## [2022.3.2.2] - 2024-02-21
 
 - Support for IntelliJ Platform `2024.1` — added `opentelementry` library.
