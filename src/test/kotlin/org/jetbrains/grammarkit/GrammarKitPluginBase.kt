@@ -28,11 +28,12 @@ abstract class GrammarKitPluginBase {
     val dir: File = createTempDirectory("tmp").toFile()
 
     val gradleProperties = file("gradle.properties")
+    val settingsFile = file("settings.gradle")
     val buildFile = file("build.gradle")
 
     @BeforeTest
     open fun setUp() {
-        file("settings.gradle").groovy("rootProject.name = 'projectName'")
+        settingsFile.groovy("rootProject.name = 'projectName'")
 
         buildFile.groovy("""
             plugins {
@@ -105,6 +106,8 @@ abstract class GrammarKitPluginBase {
     // Methods can be simplified, when following tickets will be handled:
     // https://youtrack.jetbrains.com/issue/KT-24517
     // https://youtrack.jetbrains.com/issue/KTIJ-1001
+    fun File.bnf(@Language("BNF", prefix = "//noinspection BnfResolveForFile\n") content: String) = append(content)
+
     fun File.xml(@Language("XML") content: String) = append(content)
 
     fun File.groovy(@Language("Groovy") content: String) = append(content)
@@ -116,6 +119,8 @@ abstract class GrammarKitPluginBase {
     private fun File.append(content: String) = appendText(content.trimIndent() + "\n")
 
     protected fun getResourceFile(name: String) = javaClass.classLoader.getResource(name)?.file
+
+    protected fun getResourceContent(name: String) = javaClass.classLoader.getResource(name)!!.readText()
 
     protected fun adjustWindowsPath(s: String) = s.replace("\\", "/")
 }
