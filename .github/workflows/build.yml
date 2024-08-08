@@ -111,7 +111,7 @@ jobs:
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Cache XDG_CACHE_HOME
         uses: actions/cache@v4
