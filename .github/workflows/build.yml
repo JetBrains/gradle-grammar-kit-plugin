@@ -19,20 +19,16 @@ env:
 
 jobs:
 
-  gradleValidation:
-    name: Gradle Wrapper
+  checkout:
+    name: Checkout
     runs-on: ubuntu-latest
     steps:
-
       - name: Fetch Sources
         uses: actions/checkout@v4
 
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v3.5.0
-
   codeInspection:
     name: Code Inspection
-    needs: gradleValidation
+    needs: checkout
     runs-on: ubuntu-latest
     steps:
 
@@ -44,7 +40,7 @@ jobs:
 
   test:
     name: Gradle ${{ matrix.gradleVersion }} @ ${{ matrix.os }}
-    needs: gradleValidation
+    needs: checkout
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
