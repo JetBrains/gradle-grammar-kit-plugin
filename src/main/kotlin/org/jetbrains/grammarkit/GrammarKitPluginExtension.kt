@@ -11,7 +11,7 @@ abstract class GrammarKitPluginExtension {
     /**
      * The release version of the [Grammar-Kit](https://github.com/JetBrains/Grammar-Kit) to use.
      *
-     * Default value: `2022.3.2`
+     * Default value: `2023.3`
      */
     @get:Input
     @get:Optional

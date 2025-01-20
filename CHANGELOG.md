@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Default Grammar-Kit updated to `2023.3` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
+
 ## [2022.3.2.2] - 2024-02-21
 
 - Support for IntelliJ Platform `2024.1` — added `opentelementry` library.
