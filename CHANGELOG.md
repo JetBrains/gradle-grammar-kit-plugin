@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2023.3] - 2025-11-12
+
 - Default Grammar-Kit updated to `2023.3` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
 - Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ #220
 
@@ -174,7 +176,7 @@
 
 - First release
 
-[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.2...HEAD
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3...HEAD
 [2022.3.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.1...2022.3.2
 [2022.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3...2022.3.1
 [2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
@@ -199,16 +201,17 @@
 [2018.1.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.1...2018.1.2
 [2018.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1...2018.1.1
 [2017.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1...2017.1.1
-[2017.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/commits/2017.1
-[2018.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1.1...2018.1
-[2018.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.7...2018.2
-[2018.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.2.2...2018.3
-[2019.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.3.1...2019.1
-[2019.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.1...2019.2
-[2019.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.2.1...2019.3
-[2020.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.4...2020.2
-[2021.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.3.2...2021.1
-[2021.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.3...2021.2
-[2022.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...2022.3
-[2022.3.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2...2022.3.2.1
+[2023.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.2...2023.3
 [2022.3.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.1...2022.3.2.2
+[2022.3.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2...2022.3.2.1
+[2022.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.2...2022.3
+[2021.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.1.3...2021.2
+[2021.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.3.2...2021.1
+[2020.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2020.1.4...2020.2
+[2019.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.2.1...2019.3
+[2019.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2019.1...2019.2
+[2019.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.3.1...2019.1
+[2018.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.2.2...2018.3
+[2018.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.7...2018.2
+[2018.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1.1...2018.1
+[2017.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/commits/2017.1
