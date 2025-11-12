@@ -2,7 +2,7 @@
 # plugins
 dokka = "2.1.0"
 gradlePluginPublish = "2.0.0"
-gradleChangelogPlugin = "2.2.1"
+gradleChangelogPlugin = "2.4.0"
 
 [plugins]
 pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradlePluginPublish" }
