@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Default Grammar-Kit updated to `2023.3` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
+- Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ #220
 
 ## [2022.3.2.2] - 2024-02-21
 
