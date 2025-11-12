@@ -27,9 +27,3 @@ internal fun interface TriFunction<A, B, C, R> {
         return TriFunction { a: A, b: B, c: C -> after.apply(apply(a, b, c)) }
     }
 }
-
-internal fun <T, U, R> zip(left: Provider<T>, right: Provider<U>, combiner: BiFunction<in T, in U, out R>) = left.zip(right, combiner)
-
-internal fun <T, U, V, R> zip(left: Provider<T>, center: Provider<U>, right: Provider<V>, combiner: TriFunction<in T, in U, in V, out R>) =
-    left.zip(center) { t, u -> t to u }
-        .zip(right) { (t, u), v -> combiner.apply(t, u, v) }
