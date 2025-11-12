@@ -1,7 +1,9 @@
 // Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 
+import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.changelog.ChangelogSectionUrlBuilder
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaGeneratePublicationTask
 
 fun properties(key: String) = providers.gradleProperty(key)
 
@@ -39,11 +41,11 @@ gradlePlugin {
     }
 }
 
-val dokkaHtml by tasks.existing(DokkaTask::class)
+val dokkaGeneratePublicationHtml by tasks.existing(DokkaGeneratePublicationTask::class)
 val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(dokkaHtml)
+    dependsOn(dokkaGeneratePublicationHtml)
     archiveClassifier = "javadoc"
-    from(dokkaHtml.map { it.outputDirectory })
+    from(dokkaGeneratePublicationHtml.map { it.outputDirectory })
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
