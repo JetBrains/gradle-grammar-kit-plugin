@@ -27,7 +27,6 @@ kotlin {
     jvmToolchain(17)
 }
 
-@Suppress("UnstableApiUsage")
 gradlePlugin {
     website = properties("website")
     vcsUrl = properties("vcsUrl")
