@@ -52,6 +52,7 @@ abstract class GrammarKitPlugin : Plugin<Project> {
                     "util", "util_rt", "annotations", "picocontainer", "extensions", "idea", "openapi", "opentelemetry", "grammar-kit",
                     "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
                     "module-intellij.libraries.fastutil", "module-intellij.libraries.kotlinx.collections.immutable",
+                    "module-intellij.libraries.asm",
                     // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
                     // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
                     // while parser generation with CLion distribution

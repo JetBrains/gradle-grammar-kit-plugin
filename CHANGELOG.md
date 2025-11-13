@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ IJPL-218383
+
 ## [2023.3] - 2025-11-12
 
 - Default Grammar-Kit updated to `2023.3` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
