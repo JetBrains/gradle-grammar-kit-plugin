@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
+## [2023.3.0.1] - 2025-11-13
+
 - Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ IJPL-218383
+- Default Grammar-Kit updated to `2023.3` ([Changelog](https://github.com/JetBrains/Grammar-Kit/releases))
+- Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ #220
 
 ## [2023.3] - 2025-11-12
 
@@ -178,7 +182,7 @@
 
 - First release
 
-[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3...HEAD
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3.0.1...HEAD
 [2022.3.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.1...2022.3.2
 [2022.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3...2022.3.1
 [2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
@@ -203,6 +207,7 @@
 [2018.1.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1.1...2018.1.2
 [2018.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2018.1...2018.1.1
 [2017.1.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2017.1...2017.1.1
+[2023.3.0.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3...2023.3.0.1
 [2023.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.2...2023.3
 [2022.3.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2.1...2022.3.2.2
 [2022.3.2.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.2...2022.3.2.1
