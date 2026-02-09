@@ -57,6 +57,10 @@ abstract class GrammarKitPlugin : Plugin<Project> {
                     // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
                     // while parser generation with CLion distribution
                     "testFramework", "3rd-party",
+                    // Modules required to be loaded in the IntelliJ Platform 261+
+                    "intellij.platform.core", "intellij.platform.core.impl", "intellij.platform.analysis", "intellij.platform.analysis.impl",
+                    "intellij.platform.projectModel", "intellij.platform.lang",
+                    "intellij.libraries.fastutil", "intellij.libraries.kotlinx.coroutines.core", "intellij.libraries.kotlinx.collections.immutable",
                 )
 
                 classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->

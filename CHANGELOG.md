@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Add required IntelliJ Platform modules to `requiredLibs` for compatibility with IntelliJ Platform 261+ #223
+
+## [2023.3.0.1] - 2025-11-13
+
 - Add missing libraries to requiredLibs for parser generation when targeting IntelliJ Platform 2025.3+ IJPL-218383
 
 ## [2023.3] - 2025-11-12
