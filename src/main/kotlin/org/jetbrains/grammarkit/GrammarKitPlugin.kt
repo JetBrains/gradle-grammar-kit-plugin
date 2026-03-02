@@ -37,7 +37,6 @@ abstract class GrammarKitPlugin : Plugin<Project> {
             val grammarKitClassPathConfiguration = project.configurations.register(GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
             val compileClasspathConfiguration = project.configurations.named(COMPILE_CLASSPATH_CONFIGURATION_NAME)
             val compileOnlyConfiguration = project.configurations.named(COMPILE_ONLY_CONFIGURATION_NAME)
-            val intellijPlatformConfiguration = project.configurations.named("intellijPlatformDependency")
 
             project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME)
 
@@ -53,15 +52,20 @@ abstract class GrammarKitPlugin : Plugin<Project> {
                 classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
                     file.name.startsWith("grammar-kit")
                 })
+            }
 
-                // to load the currently used IntelliJ Platform and request for all required jars
-                val ide = createIde {
-                    missingLayoutFileMode = MissingLayoutFileMode.SKIP_SILENTLY
-                    path = intellijPlatformConfiguration.get().platformPath()
+            project.tasks.withType<GenerateParserTask>().configureEach {
+                project.configurations.matching { it.name == "intellijPlatformDependency" }.configureEach {
+                    // to load the currently used IntelliJ Platform and request for all required jars
+                    val ide = createIde {
+                        missingLayoutFileMode = MissingLayoutFileMode.SKIP_SILENTLY
+                        path = platformPath()
+                    }
+
+                    val intellijClasspath = ide.findPluginById("com.intellij")?.classpath?.paths
+                    classpath(intellijClasspath)
+                    classpath(null)
                 }
-
-                val intellijClasspath = ide.findPluginById("com.intellij")?.classpath?.paths.orEmpty().toSet()
-                classpath(intellijClasspath)
             }
 
             if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != FAIL_ON_PROJECT_REPOS) {
