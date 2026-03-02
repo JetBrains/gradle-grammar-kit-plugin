@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Switch parser generation to use Plugin Verifier library and `createIde` for IntelliJ Platform classpath resolution. #225
+
+## [2023.3.0.2] - 2026-02-09
+
 - Add required IntelliJ Platform modules to `requiredLibs` for compatibility with IntelliJ Platform 261+ #223
 
 ## [2023.3.0.1] - 2025-11-13

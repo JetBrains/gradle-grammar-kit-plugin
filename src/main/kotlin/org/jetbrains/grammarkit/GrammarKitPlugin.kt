@@ -2,6 +2,8 @@
 
 package org.jetbrains.grammarkit
 
+import com.jetbrains.plugin.structure.ide.createIde
+import com.jetbrains.plugin.structure.ide.layout.MissingLayoutFileMode
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -35,6 +37,7 @@ abstract class GrammarKitPlugin : Plugin<Project> {
             val grammarKitClassPathConfiguration = project.configurations.register(GRAMMAR_KIT_CLASS_PATH_CONFIGURATION_NAME)
             val compileClasspathConfiguration = project.configurations.named(COMPILE_CLASSPATH_CONFIGURATION_NAME)
             val compileOnlyConfiguration = project.configurations.named(COMPILE_ONLY_CONFIGURATION_NAME)
+            val intellijPlatformConfiguration = project.configurations.named("intellijPlatformDependency")
 
             project.tasks.register<GenerateLexerTask>(GENERATE_LEXER_TASK_NAME)
 
@@ -47,27 +50,18 @@ abstract class GrammarKitPlugin : Plugin<Project> {
             project.tasks.register<GenerateParserTask>(GENERATE_PARSER_TASK_NAME)
 
             project.tasks.withType<GenerateParserTask>().configureEach {
-                val requiredLibs = listOf(
-                    "app", "lib", "jdom", "trove4j", "junit", "guava", "asm-all", "automaton", "platform-api", "platform-impl",
-                    "util", "util_rt", "annotations", "picocontainer", "extensions", "idea", "openapi", "opentelemetry", "grammar-kit",
-                    "platform-util-ui", "platform-concurrency", "intellij-deps-fastutil",
-                    "module-intellij.libraries.fastutil", "module-intellij.libraries.kotlinx.collections.immutable",
-                    "module-intellij.libraries.asm",
-                    // CLion unlike IDEA contains `MockProjectEx` in `testFramework.jar` instead of `idea.jar`
-                    // so this jar should be in `requiredLibs` list to avoid `NoClassDefFoundError` exception
-                    // while parser generation with CLion distribution
-                    "testFramework", "3rd-party",
-                    // Modules required to be loaded in the IntelliJ Platform 261+
-                    "intellij.platform.core", "intellij.platform.core.impl", "intellij.platform.analysis", "intellij.platform.analysis.impl",
-                    "intellij.platform.projectModel", "intellij.platform.lang",
-                    "intellij.libraries.fastutil", "intellij.libraries.kotlinx.coroutines.core", "intellij.libraries.kotlinx.collections.immutable",
-                )
-
                 classpath(getClasspath(grammarKitClassPathConfiguration, compileClasspathConfiguration) { file ->
-                    requiredLibs.any {
-                        file.name.equals("$it.jar", true) || file.name.startsWith("$it-", true)
-                    }
+                    file.name.startsWith("grammar-kit")
                 })
+
+                // to load the currently used IntelliJ Platform and request for all required jars
+                val ide = createIde {
+                    missingLayoutFileMode = MissingLayoutFileMode.SKIP_SILENTLY
+                    path = intellijPlatformConfiguration.get().platformPath()
+                }
+
+                val intellijClasspath = ide.findPluginById("com.intellij")?.classpath?.paths.orEmpty().toSet()
+                classpath(intellijClasspath)
             }
 
             if (project.settings.dependencyResolutionManagement.repositoriesMode.get() != FAIL_ON_PROJECT_REPOS) {

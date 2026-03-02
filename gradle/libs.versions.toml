@@ -3,8 +3,12 @@
 dokka = "2.1.0"
 gradlePluginPublish = "2.0.0"
 gradleChangelogPlugin = "2.4.0"
+intellijStructure = "3.320"
 
 [plugins]
 pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradlePluginPublish" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "gradleChangelogPlugin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
+[libraries]
+intellij-structure-ide = { group = "org.jetbrains.intellij.plugins", name = "structure-ide", version.ref = "intellijStructure" }

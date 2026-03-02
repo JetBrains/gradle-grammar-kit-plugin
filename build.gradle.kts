@@ -20,6 +20,13 @@ repositories {
 }
 
 dependencies {
+    val commonExclusions: Action<ExternalModuleDependency> = Action {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.jetbrains.kotlinx")
+        exclude("org.slf4j")
+    }
+
+    api(libs.intellij.structure.ide, commonExclusions)
     testImplementation(kotlin("test"))
 }
 
