@@ -3,6 +3,7 @@
 package org.jetbrains.grammarkit.tasks
 
 import org.gradle.testkit.runner.TaskOutcome.*
+import org.intellij.lang.annotations.Language
 import org.jetbrains.grammarkit.GrammarKitConstants.GENERATE_PARSER_TASK_NAME
 import org.jetbrains.grammarkit.GrammarKitPluginBase
 import kotlin.test.Test
@@ -17,8 +18,6 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRootOutputDir = project.layout.projectDirectory.dir("gen")
-                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
-                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
         """)
 
@@ -34,8 +33,6 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRootOutputDir = project.layout.projectDirectory.dir("gen")
-                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
-                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
         """)
 
@@ -49,12 +46,19 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
 
     @Test
     fun `supports build cache`() {
+        settingsFile.groovy("""
+            // Use temporary directory for build cache,
+            // as the second execution of this test will fail otherwise if the cache hasn't been cleaned
+            buildCache {
+                local {
+                    directory = file("build-cache")
+                }
+            }
+        """.trimIndent())
         buildFile.groovy("""
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRootOutputDir = project.layout.buildDirectory.dir("gen")
-                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
-                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
         """)
 
@@ -73,16 +77,150 @@ class GenerateParserTaskSpec : GrammarKitPluginBase() {
             generateParser {
                 sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
                 targetRootOutputDir = project.layout.projectDirectory.dir("gen")
-                pathToParser = "/org/jetbrains/grammarkit/IgnoreParser.java"
-                pathToPsiRoot = "/org/jetbrains/grammarkit/psi"
             }
             sourceSets.main {
               java.srcDir(tasks.generateParser)
             }
+            // Skip compilation as it would fail since the necissary dependnecies are not available
+            tasks.compileJava.onlyIf { false }
         """)
 
-        val cantCompileJava = true
-        val result = build(fail = cantCompileJava, "compileJava")
+        val result = build("compileJava")
+
+        assertEquals(SUCCESS, result.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+    }
+
+    @Test
+    fun `purge stale files by default`() {
+        testPurgeStaleFiles(expectPurge = true)
+    }
+
+    @Test
+    fun `do not purge stale files when disabled`() {
+        testPurgeStaleFiles(expectPurge = false, configuration = "purgeOldFiles = false")
+    }
+
+    @Test
+    fun `do not purge stale files by default when using pathToParser and pathToPsiRoot`() {
+        testPurgeStaleFiles(
+            expectPurge = false,
+            configuration = """
+                pathToParser = "pkg/lang"
+                pathToPsiRoot = "pkg/psi"
+                """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun `purge stale files only in subdirectories when using pathToParser and pathToPsiRoot`() {
+        testPurgeStaleFiles(
+            expectPurgeUnrelatedFiles = false,
+            expectPurgeParser = true,
+            expectPurgePsiRoot = true,
+            configuration = """
+                pathToParser = "pkg/lang"
+                pathToPsiRoot = "pkg/psi"
+                purgeOldFiles = true
+                """.trimIndent(),
+        )
+    }
+
+    private fun testPurgeStaleFiles(
+        expectPurge: Boolean? = null,
+        expectPurgeUnrelatedFiles: Boolean = expectPurge!!,
+        expectPurgeParser: Boolean = expectPurge!!,
+        expectPurgePsiRoot: Boolean = expectPurge!!,
+        @Language("Groovy", prefix = "//file:noinspection GroovyUnusedAssignment\n") configuration: String = "",
+    ) {
+        val sourceFile = file("ModifiableExample.bnf")
+        sourceFile.bnf("""
+            {
+                parserClass="pkg.lang.MyParser1"
+                psiPackage="pkg.psi"
+                psiImplPackage="pkg.psi.impl"
+            }
+        """.trimIndent())
+        sourceFile.appendText(getResourceContent("generateParser/Example.bnf"))
+        sourceFile.bnf("\nmy_rule_1 ::=")
+        buildFile.groovy("""
+            |generateParser {
+            |    sourceFile = project.file("ModifiableExample.bnf")
+            |    targetRootOutputDir = project.layout.projectDirectory.dir("gen")
+            |    ${configuration.trimIndent().replace("\n", "\n|    ")}
+            |}
+        """.trimMargin())
+
+        val firstRun = build(GENERATE_PARSER_TASK_NAME)
+        val markerFile = file("gen/pkg/STALE.txt")
+
+        assertEquals(SUCCESS, firstRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+        assertTrue("marker file doesn't exist") { markerFile.exists() }
+        assertTrue("MyParser1.java doesn't exist") { dir.resolve("gen/pkg/lang/MyParser1.java").exists() }
+        assertTrue("MyRule1.java doesn't exist") { dir.resolve("gen/pkg/psi/MyRule1.java").exists() }
+
+        sourceFile.writeText(sourceFile.readText().replace("MyParser1", "MyParser2"))
+        sourceFile.writeText(sourceFile.readText().replace("my_rule_1", "my_rule_2"))
+        val secondRun = build(GENERATE_PARSER_TASK_NAME)
+
+        assertEquals(SUCCESS, secondRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+        assertTrue("MyParser2.java doesn't exist") { dir.resolve("gen/pkg/lang/MyParser2.java").exists() }
+        assertTrue("MyRule2.java doesn't exist") { dir.resolve("gen/pkg/psi/MyRule2.java").exists() }
+
+        assertEquals(expectPurgeUnrelatedFiles, !markerFile.exists(), "marker file purged")
+        assertEquals(expectPurgeParser, !dir.resolve("gen/pkg/lang/MyParser1.java").exists(), "MyParser1.java purged")
+        assertEquals(expectPurgePsiRoot, !dir.resolve("gen/pkg/psi/MyRule1.java").exists(), "MyRule1.java purged")
+    }
+
+    @Test
+    fun `report error if only one of the properties pathToParser and pathToPsiRoot is configured`() {
+        buildFile.groovy("""
+            generateParser {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+                targetRootOutputDir = project.layout.projectDirectory.dir("gen")
+                pathToParser = "pkg/lang"
+                pathToPsiRoot = "pkg/psi"
+            }
+        """.trimIndent())
+
+        buildFile.writeText(buildFile.readText().replace("pathToParser", "//pathToParser"))
+        val firstRun = build(fail = true, GENERATE_PARSER_TASK_NAME)
+
+        assertEquals(FAILED, firstRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+        assertTrue("error message missing") { firstRun.output.contains("'pathToPsiRoot' has a configured value, but 'pathToParser' has not.") }
+
+        buildFile.writeText(buildFile.readText().replace("//pathToParser", "pathToParser"))
+        buildFile.writeText(buildFile.readText().replace("pathToPsiRoot", "//pathToPsiRoot"))
+        val secondRun = build(fail = true, GENERATE_PARSER_TASK_NAME)
+
+        assertEquals(FAILED, secondRun.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
+        assertTrue("error message missing") { secondRun.output.contains("'pathToParser' has a configured value, but 'pathToPsiRoot' has not.") }
+    }
+
+    @Test
+    fun `report error if no output directory is specified`() {
+        buildFile.groovy("""
+            import org.jetbrains.grammarkit.tasks.GenerateParserTask
+            task parserTask(type: GenerateParserTask) {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+            }
+        """.trimIndent())
+
+        val result = build(fail = true, "parserTask")
+
+        assertEquals(FAILED, result.task(":parserTask")?.outcome)
+        assertTrue("targetRootOutputDir not mentioned") { result.output.contains("targetRootOutputDir") }
+    }
+
+    @Test
+    fun `provide default for targetRootOutputDir of generateParser task`() {
+        buildFile.groovy("""
+            generateParser {
+                sourceFile = project.file("${getResourceFile("generateParser/Example.bnf")}")
+                // do not specify targetRootOutputDir
+            }
+        """.trimIndent())
+
+        val result = build(GENERATE_PARSER_TASK_NAME)
 
         assertEquals(SUCCESS, result.task(":$GENERATE_PARSER_TASK_NAME")?.outcome)
     }
