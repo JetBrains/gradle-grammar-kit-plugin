@@ -31,6 +31,12 @@ abstract class GrammarKitPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         checkGradleVersion()
+        project.logger.warn(
+            "The Gradle Grammar-Kit Plugin is archived and no longer maintained. " +
+                    "Migrate to the org.jetbrains.intellij.platform.grammarkit subplugin, which now handles all " +
+                    "Grammar-Kit integration. See: " +
+                    "https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html",
+        )
         project.plugins.withId("java") {
             val extension = project.extensions.create<GrammarKitPluginExtension>(GrammarKitConstants.GROUP_NAME)
 

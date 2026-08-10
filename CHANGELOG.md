@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Archive the Gradle Grammar-Kit Plugin in favor of the IntelliJ Platform Gradle Plugin
+  `org.jetbrains.intellij.platform.grammarkit` subplugin. #226
+
+## [2023.3.0.3] - 2026-03-02
+
 - Switch parser generation to use Plugin Verifier library and `createIde` for IntelliJ Platform classpath resolution. #225
 
 ## [2023.3.0.2] - 2026-02-09
@@ -188,7 +193,9 @@
 
 - First release
 
-[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3.0.1...HEAD
+[Unreleased]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3.0.3...HEAD
+[2023.3.0.3]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3.0.2...2023.3.0.3
+[2023.3.0.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2023.3.0.1...2023.3.0.2
 [2022.3.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3.1...2022.3.2
 [2022.3.1]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2022.3...2022.3.1
 [2021.2.2]: https://github.com/JetBrains/gradle-grammar-kit-plugin/compare/2021.2.1...2021.2.2
